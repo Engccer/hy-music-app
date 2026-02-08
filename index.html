@@ -129,10 +129,7 @@
   /* ===== 코드 진행 ===== */
   .prog-section { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; width: 100%; max-width: 700px; padding: 0 1rem; }
 
-  .prog-song-info { text-align: center; }
-  .prog-song-title { font-size: 1.6rem; font-weight: 700; }
-  .prog-song-artist { font-size: 0.95rem; color: #888; margin-top: 0.2rem; }
-  .prog-song-meta { font-size: 0.8rem; color: #555; margin-top: 0.3rem; }
+  .prog-song-artist { font-size: 0.95rem; color: #888; margin-top: 0.1rem; margin-bottom: 0.5rem; text-align: center; }
 
   .prog-track {
     width: 100%;
@@ -222,29 +219,22 @@
   .prog-vol label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
   .prog-vol span { font-size: 0.85rem; color: #888; min-width: 2.5rem; }
 
-  .prog-yt {
-    width: 100%;
-    max-width: 480px;
-    aspect-ratio: 16/9;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid #333;
-    background: #000;
-  }
-  .prog-yt iframe { width: 100%; height: 100%; border: 0; }
+  /* 탭 내 헤딩 */
+  .tab-panel h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .tab-panel h3 { font-size: 1rem; font-weight: 600; color: #aaa; margin-top: 1rem; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em; }
 
-  .prog-yt-fallback {
-    width: 100%; height: 100%; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 0.8rem;
-    color: #888; font-size: 0.95rem;
+  /* 곡 정보 dl */
+  .prog-info-dl { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1rem; font-size: 0.95rem; width: 100%; max-width: 400px; }
+  .prog-info-dl dt { color: #888; text-align: right; }
+  .prog-info-dl dd { color: #eee; }
+
+  /* YouTube 외부 링크 버튼 */
+  .prog-yt-link {
+    display: inline-block; color: #e94560; text-decoration: none;
+    padding: 0.5rem 1rem; border: 2px solid #e94560; border-radius: 8px;
+    font-size: 0.9rem; transition: all 0.15s; margin-top: 0.6rem;
   }
-  .prog-yt-fallback a {
-    color: #e94560; text-decoration: none; padding: 0.6rem 1.2rem;
-    border: 2px solid #e94560; border-radius: 8px; transition: all 0.15s;
-  }
-  .prog-yt-fallback a:hover, .prog-yt-fallback a:focus-visible {
-    background: #e94560; color: #1a1a2e; outline: none;
-  }
+  .prog-yt-link:hover, .prog-yt-link:focus-visible { background: #e94560; color: #1a1a2e; outline: none; }
 </style>
 </head>
 <body>
@@ -267,6 +257,7 @@
 
 <!-- ===== 메트로놈 ===== -->
 <div class="tab-panel active" role="tabpanel" id="panel-metro" aria-labelledby="tab-metro">
+  <h2 class="sr-only">메트로놈</h2>
   <div class="bpm-display">
     <button class="arrow-btn" id="btn-down" aria-label="BPM 1 감소">&#9664;</button>
     <div>
@@ -307,6 +298,7 @@
 
 <!-- ===== 튜너 ===== -->
 <div class="tab-panel" role="tabpanel" id="panel-tuner" aria-labelledby="tab-tuner">
+  <h2 class="sr-only">튜너</h2>
   <div class="tuner-section">
     <div class="note-grid" id="note-grid"></div>
     <div class="tuner-display">
@@ -342,16 +334,20 @@
 <!-- ===== 코드 진행 ===== -->
 <div class="tab-panel" role="tabpanel" id="panel-prog" aria-labelledby="tab-prog">
   <div class="prog-section">
-    <div class="prog-song-info">
-      <div class="prog-song-title" id="prog-title"></div>
-      <div class="prog-song-artist" id="prog-artist"></div>
-      <div class="prog-song-meta" id="prog-meta"></div>
-    </div>
+    <h2 id="prog-title">곡명</h2>
+    <p class="prog-song-artist" id="prog-artist"></p>
 
-    <div class="prog-yt" id="prog-yt-wrap" role="region" aria-label="YouTube 동영상 플레이어">
-      <div id="yt-player"></div>
-    </div>
+    <h3>곡 정보</h3>
+    <dl class="prog-info-dl" id="prog-info">
+      <dt>키</dt><dd id="prog-info-key">-</dd>
+      <dt>BPM</dt><dd id="prog-info-bpm">-</dd>
+      <dt>박자</dt><dd id="prog-info-timesig">-</dd>
+      <dt>튜닝</dt><dd id="prog-info-tuning">-</dd>
+      <dt>주요 코드</dt><dd id="prog-info-chords">-</dd>
+    </dl>
+    <a class="prog-yt-link" id="prog-yt-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none">베이스 커버 영상 보기 (YouTube)</a>
 
+    <h3>코드 진행</h3>
     <div class="prog-now">
       <div class="prog-now-chord" id="prog-now-chord">A</div>
       <div class="prog-now-beat" id="prog-now-beat"></div>
@@ -382,7 +378,7 @@
   <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
   <kbd>Space</kbd> 재생/정지 &nbsp;
   <kbd>←→</kbd> ±1 <kbd>Shift+←→</kbd> ±10 <kbd>↑↓</kbd> ±5 &nbsp;
-  <kbd>숫자</kbd> BPM
+  <kbd>Shift+↑↓</kbd> 박자 변경 <kbd>숫자</kbd> BPM
 </div>
 <div class="shortcuts" aria-hidden="true" id="shortcuts-tuner" style="display:none">
   <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
@@ -431,6 +427,8 @@
     if (activeTab === 'metro' && metroPlaying) metroStop();
     if (activeTab === 'tuner' && tunerOsc) tunerStopTone();
     if (activeTab === 'prog' && progPlaying) progStop();
+    srAnnounce.textContent = '';
+    srStatus.textContent = '';
     activeTab = name;
     for (const [k, v] of Object.entries(tabs)) {
       v.tab.setAttribute('aria-selected', k === name);
@@ -458,6 +456,16 @@
   const beatsRow = document.getElementById('beats-row');
 
   function setBPM(v) { bpm = Math.max(MIN_BPM, Math.min(MAX_BPM, v)); bpmValue.textContent = bpm; announce(bpm + ' BPM'); }
+
+  function cycleTimeSig(dir) {
+    const opts = timeSig.options;
+    let idx = timeSig.selectedIndex + dir;
+    if (idx < 0) idx = opts.length - 1;
+    if (idx >= opts.length) idx = 0;
+    timeSig.selectedIndex = idx;
+    timeSig.dispatchEvent(new Event('change'));
+    announce(opts[idx].textContent + ' 박자');
+  }
 
   function renderBeats() {
     const c = parseInt(timeSig.value); beatsRow.innerHTML = '';
@@ -514,7 +522,7 @@
     metroTimerID = setTimeout(metroScheduler, LOOKAHEAD);
   }
   function metroStart() {
-    initAudio(); ytPause();
+    initAudio();
     metroPlaying = true; currentBeat = -1; nextNoteTime = audioCtx.currentTime; metroNextNote(); metroScheduler();
     metroPlayBtn.dataset.playing = 'true'; metroPlayBtn.setAttribute('aria-label', '정지');
     announcePolite('재생 시작, ' + bpm + ' BPM');
@@ -576,7 +584,7 @@
     if (tunerGain && audioCtx) tunerGain.gain.setValueAtTime(c / 100, audioCtx.currentTime);
   }
   function tunerPlayTone(silent) {
-    initAudio(); ytPause(); tunerStopTone();
+    initAudio(); tunerStopTone();
     tunerGain = audioCtx.createGain(); tunerGain.gain.value = Number(tunerVol.value) / 100; tunerGain.connect(audioCtx.destination);
     const bf = tunerOct.checked ? selectedNote.freq * 2 : selectedNote.freq;
     const harms = [{m:1,g:0.35},{m:2,g:0.30},{m:3,g:0.15},{m:4,g:0.10},{m:5,g:0.06},{m:6,g:0.04}];
@@ -604,7 +612,7 @@
   tunerPlayBtn.addEventListener('click', tunerToggle);
   tunerVol.addEventListener('input', () => tunerSetVolume(Number(tunerVol.value)));
   tunerOct.addEventListener('change', () => { selectTNote(selectedNote); if (tunerOsc) tunerPlayTone(); });
-  selectTNote(TNOTES[0]);
+  selectTNote(TNOTES[0], true);
 
   // ========================================
   // 코드 진행 플레이어
@@ -615,7 +623,10 @@
       artist: 'Radiohead',
       bpm: 75,
       timeSig: 4,
-      ytId: 'n5h0qHwNrHk',
+      key: 'A장조',
+      chords: ['A', 'E', 'F#m', 'D'],
+      tuning: 'E Standard',
+      ytUrl: 'https://www.youtube.com/watch?v=KREuRJPoMwA',
       sections: [
         { name: 'Intro', bars: [
           { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
@@ -657,7 +668,6 @@
 
   const progTitle = document.getElementById('prog-title');
   const progArtist = document.getElementById('prog-artist');
-  const progMeta = document.getElementById('prog-meta');
   const progTrack = document.getElementById('prog-track');
   const progPlayBtn = document.getElementById('prog-play-btn');
   const progNowChord = document.getElementById('prog-now-chord');
@@ -674,11 +684,32 @@
     progSongSelect.appendChild(opt);
   });
 
+  const progInfoKey = document.getElementById('prog-info-key');
+  const progInfoBpm = document.getElementById('prog-info-bpm');
+  const progInfoTimesig = document.getElementById('prog-info-timesig');
+  const progInfoTuning = document.getElementById('prog-info-tuning');
+  const progInfoChords = document.getElementById('prog-info-chords');
+  const progYtLink = document.getElementById('prog-yt-link');
+
   function progLoadSong(idx) {
     progSong = SONGS[idx];
     progTitle.textContent = progSong.title;
     progArtist.textContent = progSong.artist;
-    progMeta.textContent = progSong.bpm + ' BPM · ' + progSong.timeSig + '/4';
+
+    // 곡 정보 렌더링
+    progInfoKey.textContent = progSong.key || '-';
+    progInfoBpm.textContent = progSong.bpm;
+    progInfoTimesig.textContent = progSong.timeSig + '/4';
+    progInfoTuning.textContent = progSong.tuning || '-';
+    progInfoChords.textContent = progSong.chords ? progSong.chords.join(' - ') : '-';
+
+    // YouTube 링크
+    if (progSong.ytUrl) {
+      progYtLink.href = progSong.ytUrl;
+      progYtLink.style.display = '';
+    } else {
+      progYtLink.style.display = 'none';
+    }
 
     // 평탄화
     progFlatBars = [];
@@ -731,14 +762,6 @@
     progBarIdx = 0;
     progBeat = -1;
     progUpdateUI();
-
-    // YouTube 로드
-    if (progSong.ytId) {
-      document.getElementById('prog-yt-wrap').style.display = '';
-      ytLoadVideo(progSong.ytId);
-    } else {
-      document.getElementById('prog-yt-wrap').style.display = 'none';
-    }
   }
 
   function progUpdateUI() {
@@ -847,7 +870,6 @@
 
   function progStart() {
     initAudio();
-    ytPause(); // YouTube 재생 중이면 일시정지
 
     progGainNode = audioCtx.createGain();
     progGainNode.gain.value = Number(progVolInput.value) / 100;
@@ -897,93 +919,11 @@
     progLoadSong(Number(progSongSelect.value));
   });
 
-  // ========================================
-  // YouTube IFrame API
-  // ========================================
-  let ytPlayer = null;
-  let ytReady = false;
-  let ytPendingVideoId = null;
-
   function stopAllAppAudio() {
     if (metroPlaying) metroStop();
     if (tunerOsc) tunerStopTone();
     if (progPlaying) progStop();
   }
-
-  function ytPause() {
-    if (ytPlayer && ytReady && typeof ytPlayer.pauseVideo === 'function') {
-      try { ytPlayer.pauseVideo(); } catch(e) {}
-    }
-  }
-
-  function ytLoadVideo(videoId) {
-    // fallback UI 제거 및 플레이어 복원
-    var wrap = document.getElementById('prog-yt-wrap');
-    var fb = wrap.querySelector('.prog-yt-fallback');
-    if (fb) fb.remove();
-    var iframe = wrap.querySelector('iframe');
-    if (iframe) iframe.style.display = '';
-    var playerEl = document.getElementById('yt-player');
-    if (playerEl) playerEl.style.display = '';
-
-    if (ytPlayer && ytReady) {
-      ytPlayer.cueVideoById(videoId);
-      // iframe title 업데이트
-      if (iframe) iframe.setAttribute('title', progSong.title + ' - ' + progSong.artist + ' YouTube 동영상');
-    } else {
-      ytPendingVideoId = videoId;
-    }
-  }
-
-  const ytScript = document.createElement('script');
-  ytScript.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(ytScript);
-
-  function showYtFallback(videoId) {
-    var wrap = document.getElementById('prog-yt-wrap');
-    var existing = wrap.querySelector('.prog-yt-fallback');
-    if (existing) existing.remove();
-    var playerEl = document.getElementById('yt-player');
-    if (playerEl) playerEl.style.display = 'none';
-    // iframe이 이미 생성된 경우 숨기기
-    var iframe = wrap.querySelector('iframe');
-    if (iframe) iframe.style.display = 'none';
-    var fb = document.createElement('div');
-    fb.className = 'prog-yt-fallback';
-    fb.innerHTML = '<span>이 동영상은 임베드가 제한되어 있습니다</span>' +
-      '<a href="https://www.youtube.com/watch?v=' + videoId + '" target="_blank" rel="noopener noreferrer">YouTube에서 열기</a>';
-    wrap.appendChild(fb);
-  }
-
-  window.onYouTubeIframeAPIReady = function() {
-    ytPlayer = new YT.Player('yt-player', {
-      height: '100%',
-      width: '100%',
-      videoId: progSong.ytId || '',
-      playerVars: { rel: 0, modestbranding: 1, enablejsapi: 1, origin: window.location.origin },
-      events: {
-        onReady: function() {
-          ytReady = true;
-          // iframe에 title 속성 추가 (접근성)
-          var iframe = document.querySelector('#prog-yt-wrap iframe');
-          if (iframe) iframe.setAttribute('title', progSong.title + ' - ' + progSong.artist + ' YouTube 동영상');
-          if (ytPendingVideoId) {
-            ytPlayer.cueVideoById(ytPendingVideoId);
-            ytPendingVideoId = null;
-          }
-        },
-        onStateChange: function(ev) {
-          if (ev.data === YT.PlayerState.PLAYING) {
-            stopAllAppAudio();
-          }
-        },
-        onError: function(ev) {
-          // 에러 코드: 2=잘못된 ID, 5=HTML5 오류, 100=삭제됨, 101/150=임베드 제한
-          showYtFallback(progSong.ytId);
-        }
-      }
-    });
-  };
 
   progLoadSong(0);
 
@@ -1010,8 +950,8 @@
         case ' ': e.preventDefault(); metroToggle(); break;
         case 'ArrowLeft': e.preventDefault(); setBPM(bpm - (e.shiftKey ? 10 : 1)); break;
         case 'ArrowRight': e.preventDefault(); setBPM(bpm + (e.shiftKey ? 10 : 1)); break;
-        case 'ArrowUp': e.preventDefault(); setBPM(bpm + 5); break;
-        case 'ArrowDown': e.preventDefault(); setBPM(bpm - 5); break;
+        case 'ArrowUp': e.preventDefault(); if (e.shiftKey) { cycleTimeSig(1); } else { setBPM(bpm + 5); } break;
+        case 'ArrowDown': e.preventDefault(); if (e.shiftKey) { cycleTimeSig(-1); } else { setBPM(bpm - 5); } break;
       }
     }
 
