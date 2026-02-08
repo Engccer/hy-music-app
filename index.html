@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HY's Music App</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  /* ===== 탭 ===== */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 2px solid #333;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.95rem;
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s;
+    letter-spacing: 0.05em;
+  }
+
+  .tab-btn:hover { color: #aaa; }
+  .tab-btn:focus-visible { outline: 2px solid #e94560; outline-offset: -2px; }
+  .tab-btn[aria-selected="true"] { color: #eee; }
+  .tab-btn[aria-selected="true"]::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #e94560;
+  }
+
+  .tab-btn .tab-key { font-size: 0.65rem; color: #555; margin-left: 0.3rem; }
+
+  .tab-panel { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; overflow-y: auto; }
+  .tab-panel.active { display: flex; }
+
+  /* ===== 공통 ===== */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  kbd { background: #16213e; border: 1px solid #333; border-radius: 4px; padding: 0.1rem 0.5rem; font-family: inherit; font-size: 0.75rem; }
+  .shortcuts { position: fixed; bottom: 1rem; color: #444; font-size: 0.75rem; text-align: center; line-height: 2; max-width: 92vw; }
+
+  .circle-btn {
+    width: 5rem; height: 5rem; border-radius: 50%; border: 3px solid #e94560;
+    background: transparent; color: #e94560; font-size: 1.8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .circle-btn:hover, .circle-btn:focus-visible { background: #e94560; color: #1a1a2e; outline: none; }
+  .circle-btn:active { transform: scale(0.92); }
+  .circle-btn .icon-stop { display: none; width: 1.4rem; height: 1.4rem; background: currentColor; border-radius: 3px; }
+  .circle-btn .icon-play { width: 0; height: 0; border-left: 1.6rem solid currentColor; border-top: 1rem solid transparent; border-bottom: 1rem solid transparent; margin-left: 0.3rem; }
+  .circle-btn[data-playing="true"] .icon-play { display: none; }
+  .circle-btn[data-playing="true"] .icon-stop { display: block; }
+
+  /* ===== 메트로놈 ===== */
+  .bpm-display { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .bpm-value { font-size: 8rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; min-width: 4ch; text-align: center; transition: color 0.1s; }
+  .bpm-label { font-size: 1.5rem; color: #666; align-self: flex-end; margin-bottom: 0.8rem; }
+
+  .arrow-btn {
+    background: none; border: 2px solid #333; color: #888; font-size: 2rem;
+    width: 3.5rem; height: 3.5rem; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .arrow-btn:hover, .arrow-btn:focus-visible { border-color: #e94560; color: #e94560; outline: none; }
+  .arrow-btn:active { transform: scale(0.92); }
+
+  .beats-row { display: flex; gap: 0.75rem; margin-bottom: 2.5rem; min-height: 2rem; }
+  .beat-dot { width: 1rem; height: 1rem; border-radius: 50%; background: #333; transition: background 0.08s, transform 0.08s; }
+  .beat-dot.active { background: #e94560; transform: scale(1.4); }
+  .beat-dot.accent { background: #ff6b6b; transform: scale(1.6); }
+
+  .metro-controls { display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem; }
+
+  .settings { display: flex; gap: 2rem; align-items: center; }
+  .setting-group { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+  .setting-group label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.1em; }
+  .setting-group select { background: #16213e; color: #eee; border: 1px solid #333; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-size: 1rem; cursor: pointer; }
+  .setting-group select:focus-visible { outline: 2px solid #e94560; outline-offset: 2px; }
+
+  /* ===== 튜너 ===== */
+  .tuner-section { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 100%; max-width: 600px; }
+  .note-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; width: 100%; }
+  .note-btn {
+    border: 2px solid #333; border-radius: 12px; background: #16213e; color: #ccc;
+    padding: 1rem 0.5rem; font-size: 1rem; cursor: pointer; text-align: center; transition: all 0.15s; line-height: 1.4;
+  }
+  .note-btn:hover { border-color: #666; color: #eee; }
+  .note-btn:focus-visible { outline: 2px solid #e94560; outline-offset: 2px; }
+  .note-btn[aria-pressed="true"] { background: rgba(233,69,96,0.15); border-color: #e94560; color: #fff; }
+  .note-btn .note-name { font-size: 2rem; font-weight: 700; display: block; }
+  .note-btn .note-freq { font-size: 0.8rem; color: #888; display: block; }
+  .note-btn .note-key { font-size: 0.7rem; color: #555; display: block; margin-top: 0.2rem; }
+
+  .tuner-display { font-size: 4rem; font-weight: 700; min-height: 5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .tuner-display .freq-text { font-size: 1.2rem; color: #888; font-weight: 400; }
+
+  .tuner-controls { display: flex; align-items: center; gap: 1.5rem; }
+  .tuner-vol { display: flex; align-items: center; gap: 0.6rem; }
+  .tuner-vol label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.1em; }
+  input[type="range"] { width: 120px; accent-color: #e94560; cursor: pointer; }
+  .tuner-vol span { font-size: 0.9rem; color: #888; min-width: 2.5rem; }
+
+  .octave-toggle { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #888; cursor: pointer; }
+  .octave-toggle input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: #e94560; cursor: pointer; }
+  .tuner-status { color: #555; font-size: 0.85rem; min-height: 1.2rem; }
+
+  .wave-bar { display: flex; align-items: flex-end; gap: 3px; height: 2rem; }
+  .wave-bar .bar { width: 4px; border-radius: 2px; background: #333; transition: height 0.15s, background 0.15s; }
+  .wave-bar.playing .bar { background: #e94560; }
+
+  /* ===== 코드 진행 ===== */
+  .prog-section { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; width: 100%; max-width: 700px; padding: 0 1rem; }
+
+  .prog-song-info { text-align: center; }
+  .prog-song-title { font-size: 1.6rem; font-weight: 700; }
+  .prog-song-artist { font-size: 0.95rem; color: #888; margin-top: 0.2rem; }
+  .prog-song-meta { font-size: 0.8rem; color: #555; margin-top: 0.3rem; }
+
+  .prog-track {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: calc(100vh - 22rem);
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+  }
+
+  .prog-section-label {
+    font-size: 0.7rem;
+    color: #e94560;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.4rem 0 0.1rem;
+    border-bottom: 1px solid #222;
+  }
+
+  .prog-bars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .prog-bar {
+    flex: 0 0 auto;
+    min-width: 4.5rem;
+    padding: 0.5rem 0.8rem;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #16213e;
+    text-align: center;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .prog-bar:hover { border-color: #555; }
+
+  .prog-bar.current {
+    border-color: #e94560;
+    background: rgba(233,69,96,0.18);
+  }
+
+  .prog-bar.played {
+    border-color: #444;
+    background: rgba(233,69,96,0.06);
+  }
+
+  .prog-bar .chord-name { font-size: 1.3rem; font-weight: 700; display: block; }
+  .prog-bar .chord-root { font-size: 0.7rem; color: #666; display: block; }
+  .prog-bar .bar-num { font-size: 0.6rem; color: #444; display: block; margin-top: 0.15rem; }
+
+  .prog-now {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.5rem;
+  }
+
+  .prog-now-chord { font-size: 3rem; font-weight: 700; min-width: 5ch; text-align: center; }
+  .prog-now-beat {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .prog-now-beat .dot {
+    width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #333; transition: all 0.1s;
+  }
+  .prog-now-beat .dot.on { background: #e94560; transform: scale(1.3); }
+  .prog-now-beat .dot.accent { background: #ff6b6b; transform: scale(1.5); }
+
+  .prog-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .prog-vol { display: flex; align-items: center; gap: 0.5rem; }
+  .prog-vol label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+  .prog-vol span { font-size: 0.85rem; color: #888; min-width: 2.5rem; }
+
+  .prog-yt {
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 16/9;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #333;
+    background: #000;
+  }
+  .prog-yt iframe { width: 100%; height: 100%; border: 0; }
+</style>
+</head>
+<body>
+
+<div id="sr-announce" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+<div id="sr-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+<!-- 탭 바 -->
+<div class="tab-bar" role="tablist" aria-label="기능 선택">
+  <button class="tab-btn" role="tab" id="tab-metro" aria-selected="true" aria-controls="panel-metro">
+    메트로놈<span class="tab-key" aria-hidden="true">Ctrl+1</span>
+  </button>
+  <button class="tab-btn" role="tab" id="tab-tuner" aria-selected="false" aria-controls="panel-tuner">
+    튜너<span class="tab-key" aria-hidden="true">Ctrl+2</span>
+  </button>
+  <button class="tab-btn" role="tab" id="tab-prog" aria-selected="false" aria-controls="panel-prog">
+    코드 진행<span class="tab-key" aria-hidden="true">Ctrl+3</span>
+  </button>
+</div>
+
+<!-- ===== 메트로놈 ===== -->
+<div class="tab-panel active" role="tabpanel" id="panel-metro" aria-labelledby="tab-metro">
+  <div class="bpm-display">
+    <button class="arrow-btn" id="btn-down" aria-label="BPM 1 감소">&#9664;</button>
+    <div>
+      <div class="bpm-value" id="bpm-value" role="status">120</div>
+      <div class="bpm-label" aria-hidden="true">BPM</div>
+    </div>
+    <button class="arrow-btn" id="btn-up" aria-label="BPM 1 증가">&#9654;</button>
+  </div>
+  <div class="beats-row" id="beats-row" aria-hidden="true"></div>
+  <div class="metro-controls">
+    <button class="circle-btn" id="metro-play-btn" data-playing="false" aria-label="재생">
+      <span class="icon-play" aria-hidden="true"></span>
+      <span class="icon-stop" aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="settings">
+    <div class="setting-group">
+      <label for="time-sig">박자</label>
+      <select id="time-sig">
+        <option value="2">2/4</option>
+        <option value="3">3/4</option>
+        <option value="4" selected>4/4</option>
+        <option value="6">6/8</option>
+        <option value="8">8/8</option>
+      </select>
+    </div>
+    <div class="setting-group">
+      <label for="sound-type">소리</label>
+      <select id="sound-type">
+        <option value="click" selected>클릭</option>
+        <option value="wood">우드블록</option>
+        <option value="beep">비프</option>
+        <option value="deep">딥 베이스</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 튜너 ===== -->
+<div class="tab-panel" role="tabpanel" id="panel-tuner" aria-labelledby="tab-tuner">
+  <div class="tuner-section">
+    <div class="note-grid" id="note-grid"></div>
+    <div class="tuner-display">
+      <span id="tuner-note-name">B0</span>
+      <span class="freq-text" id="tuner-freq">30.87 Hz</span>
+    </div>
+    <div class="wave-bar" id="wave-bar">
+      <div class="bar" style="height:6px"></div><div class="bar" style="height:10px"></div>
+      <div class="bar" style="height:16px"></div><div class="bar" style="height:22px"></div>
+      <div class="bar" style="height:28px"></div><div class="bar" style="height:22px"></div>
+      <div class="bar" style="height:16px"></div><div class="bar" style="height:10px"></div>
+      <div class="bar" style="height:6px"></div>
+    </div>
+    <div class="tuner-controls">
+      <button class="circle-btn" id="tuner-play-btn" data-playing="false" aria-label="기준음 재생">
+        <span class="icon-play" aria-hidden="true"></span>
+        <span class="icon-stop" aria-hidden="true"></span>
+      </button>
+      <div class="tuner-vol">
+        <label for="tuner-vol">볼륨</label>
+        <input id="tuner-vol" type="range" min="0" max="100" value="70" />
+        <span id="tuner-vol-val">70%</span>
+      </div>
+    </div>
+    <label class="octave-toggle">
+      <input type="checkbox" id="tuner-oct" />
+      +1 옥타브 (저음 보조)
+    </label>
+    <div class="tuner-status" id="tuner-status">음 선택 후 재생 버튼 또는 Space로 시작</div>
+  </div>
+</div>
+
+<!-- ===== 코드 진행 ===== -->
+<div class="tab-panel" role="tabpanel" id="panel-prog" aria-labelledby="tab-prog">
+  <div class="prog-section">
+    <div class="prog-song-info">
+      <div class="prog-song-title" id="prog-title"></div>
+      <div class="prog-song-artist" id="prog-artist"></div>
+      <div class="prog-song-meta" id="prog-meta"></div>
+    </div>
+
+    <div class="prog-yt" id="prog-yt-wrap">
+      <div id="yt-player"></div>
+    </div>
+
+    <div class="prog-now">
+      <div class="prog-now-chord" id="prog-now-chord">A</div>
+      <div class="prog-now-beat" id="prog-now-beat"></div>
+    </div>
+
+    <div class="prog-track" id="prog-track"></div>
+
+    <div class="prog-controls">
+      <button class="circle-btn" id="prog-play-btn" data-playing="false" aria-label="재생">
+        <span class="icon-play" aria-hidden="true"></span>
+        <span class="icon-stop" aria-hidden="true"></span>
+      </button>
+      <div class="prog-vol">
+        <label for="prog-vol">볼륨</label>
+        <input id="prog-vol" type="range" min="0" max="100" value="70" />
+        <span id="prog-vol-val">70%</span>
+      </div>
+      <div class="setting-group">
+        <label for="prog-song">곡 선택</label>
+        <select id="prog-song"></select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 단축키 -->
+<div class="shortcuts" aria-hidden="true" id="shortcuts-metro">
+  <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
+  <kbd>Space</kbd> 재생/정지 &nbsp;
+  <kbd>←→</kbd> ±1 <kbd>Shift+←→</kbd> ±10 <kbd>↑↓</kbd> ±5 &nbsp;
+  <kbd>숫자</kbd> BPM
+</div>
+<div class="shortcuts" aria-hidden="true" id="shortcuts-tuner" style="display:none">
+  <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
+  <kbd>Space</kbd> 재생/정지 &nbsp;
+  <kbd>B</kbd><kbd>E</kbd><kbd>A</kbd><kbd>D</kbd><kbd>G</kbd> 음 선택+재생 <kbd>↑↓</kbd> 볼륨
+</div>
+<div class="shortcuts" aria-hidden="true" id="shortcuts-prog" style="display:none">
+  <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
+  <kbd>Space</kbd> 재생/정지 &nbsp;
+  <kbd>←→</kbd> 이전/다음 마디 <kbd>↑↓</kbd> 볼륨
+</div>
+
+<script>
+(function() {
+  // ===== 공통 오디오 =====
+  let audioCtx = null;
+  const srAnnounce = document.getElementById('sr-announce');
+  const srStatus = document.getElementById('sr-status');
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  let annTimer = null;
+  function announce(msg) {
+    clearTimeout(annTimer);
+    srAnnounce.textContent = '';
+    annTimer = setTimeout(() => { srAnnounce.textContent = msg; }, 50);
+  }
+  function announcePolite(msg) {
+    srStatus.textContent = '';
+    setTimeout(() => { srStatus.textContent = msg; }, 50);
+  }
+
+  // ===== 탭 =====
+  let activeTab = 'metro';
+  const tabs = {
+    metro: { tab: document.getElementById('tab-metro'), panel: document.getElementById('panel-metro'), sc: document.getElementById('shortcuts-metro') },
+    tuner: { tab: document.getElementById('tab-tuner'), panel: document.getElementById('panel-tuner'), sc: document.getElementById('shortcuts-tuner') },
+    prog:  { tab: document.getElementById('tab-prog'),  panel: document.getElementById('panel-prog'),  sc: document.getElementById('shortcuts-prog') },
+  };
+
+  function switchTab(name) {
+    if (name === activeTab) return;
+    if (activeTab === 'metro' && metroPlaying) metroStop();
+    if (activeTab === 'tuner' && tunerOsc) tunerStopTone();
+    if (activeTab === 'prog' && progPlaying) progStop();
+    activeTab = name;
+    for (const [k, v] of Object.entries(tabs)) {
+      v.tab.setAttribute('aria-selected', k === name);
+      v.panel.classList.toggle('active', k === name);
+      v.sc.style.display = k === name ? '' : 'none';
+    }
+    announcePolite(name === 'metro' ? '메트로놈 탭' : name === 'tuner' ? '튜너 탭' : '코드 진행 탭');
+  }
+
+  tabs.metro.tab.addEventListener('click', () => switchTab('metro'));
+  tabs.tuner.tab.addEventListener('click', () => switchTab('tuner'));
+  tabs.prog.tab.addEventListener('click', () => switchTab('prog'));
+
+  // ========================================
+  // 메트로놈
+  // ========================================
+  let bpm = 120, metroPlaying = false, currentBeat = -1, metroTimerID = null, nextNoteTime = 0;
+  const MIN_BPM = 20, MAX_BPM = 300, SCHEDULE_AHEAD = 0.1, LOOKAHEAD = 25;
+  const bpmValue = document.getElementById('bpm-value');
+  const metroPlayBtn = document.getElementById('metro-play-btn');
+  const btnDown = document.getElementById('btn-down');
+  const btnUp = document.getElementById('btn-up');
+  const timeSig = document.getElementById('time-sig');
+  const soundType = document.getElementById('sound-type');
+  const beatsRow = document.getElementById('beats-row');
+
+  function setBPM(v) { bpm = Math.max(MIN_BPM, Math.min(MAX_BPM, v)); bpmValue.textContent = bpm; announce(bpm + ' BPM'); }
+
+  function renderBeats() {
+    const c = parseInt(timeSig.value); beatsRow.innerHTML = '';
+    for (let i = 0; i < c; i++) { const d = document.createElement('div'); d.className = 'beat-dot'; beatsRow.appendChild(d); }
+  }
+  function highlightBeat(idx) {
+    beatsRow.querySelectorAll('.beat-dot').forEach((d, i) => {
+      d.className = 'beat-dot' + (i === idx ? (i === 0 ? ' accent' : ' active') : '');
+    });
+  }
+  function clearBeats() { beatsRow.querySelectorAll('.beat-dot').forEach(d => d.className = 'beat-dot'); currentBeat = -1; }
+
+  function playClick(time, isAccent) {
+    const type = soundType.value;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    if (type === 'click') {
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.frequency.value = isAccent ? 1500 : 1000; osc.type = 'square';
+      gain.gain.setValueAtTime(isAccent ? 0.6 : 0.3, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+      osc.start(time); osc.stop(time + 0.03);
+    } else if (type === 'wood') {
+      const f = audioCtx.createBiquadFilter();
+      osc.connect(f); f.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'triangle'; osc.frequency.value = isAccent ? 800 : 600;
+      f.type = 'bandpass'; f.frequency.value = isAccent ? 800 : 600; f.Q.value = 5;
+      gain.gain.setValueAtTime(isAccent ? 0.8 : 0.4, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+      osc.start(time); osc.stop(time + 0.06);
+    } else if (type === 'beep') {
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sine'; osc.frequency.value = isAccent ? 880 : 660;
+      gain.gain.setValueAtTime(isAccent ? 0.5 : 0.25, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+      osc.start(time); osc.stop(time + 0.08);
+    } else {
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sine'; osc.frequency.value = isAccent ? 110 : 82.41;
+      gain.gain.setValueAtTime(isAccent ? 0.7 : 0.4, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+      osc.start(time); osc.stop(time + 0.15);
+    }
+  }
+
+  function metroNextNote() { nextNoteTime += 60.0 / bpm; currentBeat = (currentBeat + 1) % parseInt(timeSig.value); }
+  function metroScheduler() {
+    while (nextNoteTime < audioCtx.currentTime + SCHEDULE_AHEAD) {
+      playClick(nextNoteTime, currentBeat === 0);
+      const bi = currentBeat, delay = Math.max(0, (nextNoteTime - audioCtx.currentTime) * 1000);
+      setTimeout(() => highlightBeat(bi), delay);
+      metroNextNote();
+    }
+    metroTimerID = setTimeout(metroScheduler, LOOKAHEAD);
+  }
+  function metroStart() {
+    initAudio(); ytPause();
+    metroPlaying = true; currentBeat = -1; nextNoteTime = audioCtx.currentTime; metroNextNote(); metroScheduler();
+    metroPlayBtn.dataset.playing = 'true'; metroPlayBtn.setAttribute('aria-label', '정지');
+    announcePolite('재생 시작, ' + bpm + ' BPM');
+  }
+  function metroStop() {
+    metroPlaying = false; clearTimeout(metroTimerID); metroTimerID = null; clearBeats();
+    metroPlayBtn.dataset.playing = 'false'; metroPlayBtn.setAttribute('aria-label', '재생');
+    announcePolite('정지');
+  }
+  function metroToggle() { metroPlaying ? metroStop() : metroStart(); }
+  metroPlayBtn.addEventListener('click', metroToggle);
+  btnDown.addEventListener('click', () => setBPM(bpm - 1));
+  btnUp.addEventListener('click', () => setBPM(bpm + 1));
+  timeSig.addEventListener('change', () => { renderBeats(); if (metroPlaying) { metroStop(); metroStart(); } });
+
+  let digitBuf = '', digitTimer = null;
+  function commitDigits() { const v = parseInt(digitBuf, 10); if (!isNaN(v) && v > 0) setBPM(v); digitBuf = ''; digitTimer = null; }
+  renderBeats(); bpmValue.textContent = bpm;
+
+  // ========================================
+  // 튜너
+  // ========================================
+  const TNOTES = [
+    { name: 'B0', freq: 30.8677, key: 'b' }, { name: 'E1', freq: 41.2034, key: 'e' },
+    { name: 'A1', freq: 55.0, key: 'a' }, { name: 'D2', freq: 73.4162, key: 'd' }, { name: 'G2', freq: 97.9989, key: 'g' },
+  ];
+  let selectedNote = TNOTES[0], tunerOsc = null, tunerGain = null, waveAnimID = null;
+  const noteGrid = document.getElementById('note-grid');
+  const tunerPlayBtn = document.getElementById('tuner-play-btn');
+  const tunerNoteName = document.getElementById('tuner-note-name');
+  const tunerFreq = document.getElementById('tuner-freq');
+  const tunerVol = document.getElementById('tuner-vol');
+  const tunerVolVal = document.getElementById('tuner-vol-val');
+  const tunerOct = document.getElementById('tuner-oct');
+  const tunerStatusEl = document.getElementById('tuner-status');
+  const waveBar = document.getElementById('wave-bar');
+  const waveBars = waveBar.querySelectorAll('.bar');
+
+  TNOTES.forEach(note => {
+    const btn = document.createElement('button'); btn.className = 'note-btn';
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-pressed', note === selectedNote ? 'true' : 'false');
+    btn.setAttribute('aria-label', note.name + ' ' + note.freq.toFixed(2) + '헤르츠, 키보드 ' + note.key.toUpperCase());
+    btn.innerHTML = '<span class="note-name">' + note.name + '</span><span class="note-freq">' + note.freq.toFixed(2) + ' Hz</span><span class="note-key">[' + note.key.toUpperCase() + ']</span>';
+    btn.dataset.noteName = note.name;
+    btn.addEventListener('click', () => selectTNote(note));
+    noteGrid.appendChild(btn);
+  });
+
+  function selectTNote(note, silent) {
+    selectedNote = note; tunerNoteName.textContent = note.name;
+    const freq = tunerOct.checked ? note.freq * 2 : note.freq;
+    tunerFreq.textContent = freq.toFixed(2) + ' Hz';
+    noteGrid.querySelectorAll('.note-btn').forEach(b => b.setAttribute('aria-pressed', b.dataset.noteName === note.name ? 'true' : 'false'));
+    if (!silent) announce(note.name + ' ' + freq.toFixed(2) + '헤르츠');
+  }
+  function tunerSetVolume(v) {
+    const c = Math.max(0, Math.min(100, v)); tunerVol.value = c; tunerVolVal.textContent = c + '%';
+    if (tunerGain && audioCtx) tunerGain.gain.setValueAtTime(c / 100, audioCtx.currentTime);
+  }
+  function tunerPlayTone(silent) {
+    initAudio(); ytPause(); tunerStopTone();
+    tunerGain = audioCtx.createGain(); tunerGain.gain.value = Number(tunerVol.value) / 100; tunerGain.connect(audioCtx.destination);
+    const bf = tunerOct.checked ? selectedNote.freq * 2 : selectedNote.freq;
+    const harms = [{m:1,g:0.35},{m:2,g:0.30},{m:3,g:0.15},{m:4,g:0.10},{m:5,g:0.06},{m:6,g:0.04}];
+    const oscs = [];
+    harms.forEach(h => { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type = 'sine'; o.frequency.value = bf * h.m; g.gain.value = h.g; o.connect(g); g.connect(tunerGain); o.start(); oscs.push(o); });
+    tunerOsc = oscs; tunerPlayBtn.dataset.playing = 'true'; tunerPlayBtn.setAttribute('aria-label', '정지');
+    tunerFreq.textContent = bf.toFixed(2) + ' Hz';
+    tunerStatusEl.textContent = '재생 중: ' + selectedNote.name + ' (' + bf.toFixed(2) + ' Hz)';
+    if (!silent) announcePolite('재생 중, ' + selectedNote.name + ', ' + bf.toFixed(2) + '헤르츠');
+    waveBar.classList.add('playing'); animateWave();
+  }
+  function tunerStopTone() {
+    if (tunerOsc) { tunerOsc.forEach(o => { try { o.stop(); o.disconnect(); } catch(e){} }); tunerOsc = null; }
+    if (tunerGain) { tunerGain.disconnect(); tunerGain = null; }
+    tunerPlayBtn.dataset.playing = 'false'; tunerPlayBtn.setAttribute('aria-label', '기준음 재생');
+    tunerStatusEl.textContent = '정지됨'; waveBar.classList.remove('playing'); cancelAnimationFrame(waveAnimID);
+    const hs = [6,10,16,22,28,22,16,10,6]; waveBars.forEach((b,i) => b.style.height = hs[i] + 'px');
+  }
+  function tunerToggle() { tunerOsc ? tunerStopTone() : tunerPlayTone(); }
+  function animateWave() {
+    if (!tunerOsc) return; const t = performance.now() / 200;
+    waveBars.forEach((b,i) => { b.style.height = Math.max(4, 8 + Math.sin(t + i * 0.7) * 12 + Math.sin(t * 1.3 + i) * 6) + 'px'; });
+    waveAnimID = requestAnimationFrame(animateWave);
+  }
+  tunerPlayBtn.addEventListener('click', tunerToggle);
+  tunerVol.addEventListener('input', () => tunerSetVolume(Number(tunerVol.value)));
+  tunerOct.addEventListener('change', () => { selectTNote(selectedNote); if (tunerOsc) tunerPlayTone(); });
+  selectTNote(TNOTES[0]);
+
+  // ========================================
+  // 코드 진행 플레이어
+  // ========================================
+  const SONGS = [
+    {
+      title: 'Fake Plastic Trees',
+      artist: 'Radiohead',
+      bpm: 75,
+      timeSig: 4,
+      ytId: 'n5h0qHwNrHk',
+      sections: [
+        { name: 'Intro', bars: [
+          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+        ]},
+        { name: 'Verse 1', bars: [
+          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+        ]},
+        { name: 'Chorus', bars: [
+          { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'E', root: 41.20 },
+        ]},
+        { name: 'Verse 2', bars: [
+          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+        ]},
+        { name: 'Chorus', bars: [
+          { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'E', root: 41.20 },
+        ]},
+        { name: 'Bridge', bars: [
+          { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'A', root: 55.00 },
+        ]},
+        { name: 'Outro', bars: [
+          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+          { chord: 'A', root: 55.00 },
+        ]},
+      ]
+    }
+  ];
+
+  let progPlaying = false;
+  let progTimerID = null;
+  let progNextTime = 0;
+  let progBeat = -1;
+  let progBarIdx = 0;
+  let progSong = SONGS[0];
+  let progFlatBars = [];  // 평탄화된 마디 배열
+  let progBarEls = [];    // DOM 요소 배열
+  let progGainNode = null;
+
+  const progTitle = document.getElementById('prog-title');
+  const progArtist = document.getElementById('prog-artist');
+  const progMeta = document.getElementById('prog-meta');
+  const progTrack = document.getElementById('prog-track');
+  const progPlayBtn = document.getElementById('prog-play-btn');
+  const progNowChord = document.getElementById('prog-now-chord');
+  const progNowBeat = document.getElementById('prog-now-beat');
+  const progVolInput = document.getElementById('prog-vol');
+  const progVolVal = document.getElementById('prog-vol-val');
+  const progSongSelect = document.getElementById('prog-song');
+
+  // 곡 select 생성
+  SONGS.forEach((s, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = s.artist + ' - ' + s.title;
+    progSongSelect.appendChild(opt);
+  });
+
+  function progLoadSong(idx) {
+    progSong = SONGS[idx];
+    progTitle.textContent = progSong.title;
+    progArtist.textContent = progSong.artist;
+    progMeta.textContent = progSong.bpm + ' BPM · ' + progSong.timeSig + '/4';
+
+    // 평탄화
+    progFlatBars = [];
+    progSong.sections.forEach(sec => {
+      sec.bars.forEach(bar => {
+        progFlatBars.push({ ...bar, section: sec.name });
+      });
+    });
+
+    // 트랙 렌더링
+    progTrack.innerHTML = '';
+    progBarEls = [];
+    let lastSection = '';
+    let globalNum = 0;
+
+    progSong.sections.forEach(sec => {
+      // 섹션 라벨
+      const label = document.createElement('div');
+      label.className = 'prog-section-label';
+      label.textContent = sec.name;
+      progTrack.appendChild(label);
+
+      const barsWrap = document.createElement('div');
+      barsWrap.className = 'prog-bars';
+
+      sec.bars.forEach(bar => {
+        const el = document.createElement('div');
+        el.className = 'prog-bar';
+        el.innerHTML = '<span class="chord-name">' + bar.chord + '</span><span class="chord-root">' + bar.root.toFixed(1) + ' Hz</span><span class="bar-num">' + (globalNum + 1) + '</span>';
+        el.addEventListener('click', () => {
+          progJumpTo(globalNum);
+        });
+        barsWrap.appendChild(el);
+        progBarEls.push(el);
+        globalNum++;
+      });
+
+      progTrack.appendChild(barsWrap);
+    });
+
+    // 비트 도트 렌더
+    progNowBeat.innerHTML = '';
+    for (let i = 0; i < progSong.timeSig; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      progNowBeat.appendChild(dot);
+    }
+
+    progBarIdx = 0;
+    progBeat = -1;
+    progUpdateUI();
+
+    // YouTube 로드
+    if (progSong.ytId) {
+      document.getElementById('prog-yt-wrap').style.display = '';
+      ytLoadVideo(progSong.ytId);
+    } else {
+      document.getElementById('prog-yt-wrap').style.display = 'none';
+    }
+  }
+
+  function progUpdateUI() {
+    const bar = progFlatBars[progBarIdx];
+    if (!bar) return;
+    progNowChord.textContent = bar.chord;
+
+    progBarEls.forEach((el, i) => {
+      el.classList.remove('current', 'played');
+      if (i === progBarIdx) el.classList.add('current');
+      else if (i < progBarIdx) el.classList.add('played');
+    });
+
+    // 스크롤 현재 마디가 보이도록
+    const curEl = progBarEls[progBarIdx];
+    if (curEl) curEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function progHighlightBeat(beatIdx) {
+    progNowBeat.querySelectorAll('.dot').forEach((d, i) => {
+      d.className = 'dot' + (i === beatIdx ? (i === 0 ? ' accent' : ' on') : '');
+    });
+  }
+
+  function progClearBeatDots() {
+    progNowBeat.querySelectorAll('.dot').forEach(d => d.className = 'dot');
+  }
+
+  // 클릭음 (코드 진행 전용 - 가벼운 클릭)
+  function progPlayClick(time, isAccent) {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.connect(g); g.connect(progGainNode);
+    osc.type = 'square';
+    osc.frequency.value = isAccent ? 1500 : 1000;
+    g.gain.setValueAtTime(isAccent ? 0.25 : 0.12, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.025);
+    osc.start(time); osc.stop(time + 0.025);
+  }
+
+  // 베이스 음 재생 (배음 포함, 디케이 있음)
+  function progPlayBass(time, freq) {
+    const harmonics = [
+      { m: 1, g: 0.40 }, { m: 2, g: 0.25 }, { m: 3, g: 0.12 },
+      { m: 4, g: 0.06 }, { m: 5, g: 0.03 },
+    ];
+    const beatDuration = 60.0 / progSong.bpm;
+    const barDuration = beatDuration * progSong.timeSig;
+    const sustain = barDuration * 0.85;
+
+    harmonics.forEach(h => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq * h.m;
+      g.gain.setValueAtTime(h.g, time);
+      g.gain.setValueAtTime(h.g * 0.8, time + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, time + sustain);
+      osc.connect(g); g.connect(progGainNode);
+      osc.start(time); osc.stop(time + sustain + 0.01);
+    });
+  }
+
+  function progNextBeat() {
+    const ts = progSong.timeSig;
+    progBeat++;
+    if (progBeat >= ts) {
+      progBeat = 0;
+      progBarIdx++;
+      if (progBarIdx >= progFlatBars.length) {
+        progBarIdx = 0; // 처음으로 루프
+      }
+    }
+  }
+
+  function progScheduler() {
+    while (progNextTime < audioCtx.currentTime + SCHEDULE_AHEAD) {
+      const isAccent = progBeat === 0;
+      const bar = progFlatBars[progBarIdx];
+      if (!bar) break;
+
+      progPlayClick(progNextTime, isAccent);
+
+      // 마디 첫 박에서 베이스 음 재생
+      if (progBeat === 0) {
+        progPlayBass(progNextTime, bar.root);
+      }
+
+      const bi = progBeat;
+      const barI = progBarIdx;
+      const delay = Math.max(0, (progNextTime - audioCtx.currentTime) * 1000);
+      setTimeout(() => {
+        progHighlightBeat(bi);
+        if (bi === 0) {
+          progBarIdx = barI; // UI 동기화
+          progUpdateUI();
+        }
+      }, delay);
+
+      const beatDuration = 60.0 / progSong.bpm;
+      progNextTime += beatDuration;
+      progNextBeat();
+    }
+    progTimerID = setTimeout(progScheduler, LOOKAHEAD);
+  }
+
+  function progStart() {
+    initAudio();
+    ytPause(); // YouTube 재생 중이면 일시정지
+
+    progGainNode = audioCtx.createGain();
+    progGainNode.gain.value = Number(progVolInput.value) / 100;
+    progGainNode.connect(audioCtx.destination);
+
+    progPlaying = true;
+    progBeat = -1;
+    progNextTime = audioCtx.currentTime;
+    progNextBeat();
+    progScheduler();
+    progPlayBtn.dataset.playing = 'true';
+    progPlayBtn.setAttribute('aria-label', '정지');
+  }
+
+  function progStop() {
+    progPlaying = false;
+    clearTimeout(progTimerID); progTimerID = null;
+    if (progGainNode) { progGainNode.disconnect(); progGainNode = null; }
+    progClearBeatDots();
+    progPlayBtn.dataset.playing = 'false';
+    progPlayBtn.setAttribute('aria-label', '재생');
+  }
+
+  function progToggle() { progPlaying ? progStop() : progStart(); }
+
+  function progJumpTo(barIdx) {
+    progBarIdx = Math.max(0, Math.min(progFlatBars.length - 1, barIdx));
+    progBeat = -1;
+    progUpdateUI();
+    if (progPlaying) {
+      progStop();
+      progStart();
+    }
+  }
+
+  function progSetVolume(v) {
+    const c = Math.max(0, Math.min(100, v));
+    progVolInput.value = c;
+    progVolVal.textContent = c + '%';
+    if (progGainNode && audioCtx) progGainNode.gain.setValueAtTime(c / 100, audioCtx.currentTime);
+  }
+
+  progPlayBtn.addEventListener('click', progToggle);
+  progVolInput.addEventListener('input', () => progSetVolume(Number(progVolInput.value)));
+  progSongSelect.addEventListener('change', () => {
+    if (progPlaying) progStop();
+    progLoadSong(Number(progSongSelect.value));
+  });
+
+  // ========================================
+  // YouTube IFrame API
+  // ========================================
+  let ytPlayer = null;
+  let ytReady = false;
+  let ytPendingVideoId = null;
+
+  function stopAllAppAudio() {
+    if (metroPlaying) metroStop();
+    if (tunerOsc) tunerStopTone();
+    if (progPlaying) progStop();
+  }
+
+  function ytPause() {
+    if (ytPlayer && ytReady && typeof ytPlayer.pauseVideo === 'function') {
+      try { ytPlayer.pauseVideo(); } catch(e) {}
+    }
+  }
+
+  function ytLoadVideo(videoId) {
+    if (ytPlayer && ytReady) {
+      ytPlayer.cueVideoById(videoId);
+    } else {
+      ytPendingVideoId = videoId;
+    }
+  }
+
+  const ytScript = document.createElement('script');
+  ytScript.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(ytScript);
+
+  window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('yt-player', {
+      height: '100%',
+      width: '100%',
+      videoId: progSong.ytId || '',
+      playerVars: { rel: 0, modestbranding: 1 },
+      events: {
+        onReady: function() {
+          ytReady = true;
+          if (ytPendingVideoId) {
+            ytPlayer.cueVideoById(ytPendingVideoId);
+            ytPendingVideoId = null;
+          }
+        },
+        onStateChange: function(ev) {
+          if (ev.data === YT.PlayerState.PLAYING) {
+            stopAllAppAudio();
+          }
+        }
+      }
+    });
+  };
+
+  progLoadSong(0);
+
+  // ========================================
+  // 키보드
+  // ========================================
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === '1') { e.preventDefault(); switchTab('metro'); return; }
+    if (e.ctrlKey && e.key === '2') { e.preventDefault(); switchTab('tuner'); return; }
+    if (e.ctrlKey && e.key === '3') { e.preventDefault(); switchTab('prog'); return; }
+
+    const tag = e.target.tagName;
+    if (tag === 'SELECT' || (tag === 'INPUT' && e.target.type !== 'checkbox')) return;
+
+    // 메트로놈
+    if (activeTab === 'metro') {
+      if (/^[0-9]$/.test(e.key) && !e.ctrlKey) {
+        e.preventDefault(); digitBuf += e.key; clearTimeout(digitTimer);
+        if (digitBuf.length >= 3) commitDigits(); else digitTimer = setTimeout(commitDigits, 800);
+        return;
+      }
+      if (digitBuf) { clearTimeout(digitTimer); commitDigits(); }
+      switch (e.key) {
+        case ' ': e.preventDefault(); metroToggle(); break;
+        case 'ArrowLeft': e.preventDefault(); setBPM(bpm - (e.shiftKey ? 10 : 1)); break;
+        case 'ArrowRight': e.preventDefault(); setBPM(bpm + (e.shiftKey ? 10 : 1)); break;
+        case 'ArrowUp': e.preventDefault(); setBPM(bpm + 5); break;
+        case 'ArrowDown': e.preventDefault(); setBPM(bpm - 5); break;
+      }
+    }
+
+    // 튜너
+    if (activeTab === 'tuner') {
+      if (e.key === ' ') { e.preventDefault(); tunerToggle(); return; }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault(); tunerSetVolume(Number(tunerVol.value) + (e.key === 'ArrowUp' ? 5 : -5));
+        announce('볼륨 ' + tunerVol.value + '%'); return;
+      }
+      const nk = e.key.toLowerCase();
+      const nm = { b: 'B0', e: 'E1', a: 'A1', d: 'D2', g: 'G2' };
+      if (nm[nk] && !e.repeat) {
+        const n = TNOTES.find(x => x.name === nm[nk]);
+        if (n) { selectTNote(n, true); tunerPlayTone(true); }
+      }
+    }
+
+    // 코드 진행
+    if (activeTab === 'prog') {
+      if (e.key === ' ') { e.preventDefault(); progToggle(); return; }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); progJumpTo(progBarIdx - 1); return; }
+      if (e.key === 'ArrowRight') { e.preventDefault(); progJumpTo(progBarIdx + 1); return; }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault(); progSetVolume(Number(progVolInput.value) + (e.key === 'ArrowUp' ? 5 : -5)); return;
+      }
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
