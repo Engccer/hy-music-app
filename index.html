@@ -1067,6 +1067,7 @@
         if (next >= 0 && next < SONGS.length) {
           progSongSelect.value = next;
           progSongSelect.dispatchEvent(new Event('change'));
+          announce(SONGS[next].artist + ', ' + SONGS[next].title);
         }
         return;
       }
