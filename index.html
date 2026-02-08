@@ -388,7 +388,7 @@
 <div class="shortcuts" aria-hidden="true" id="shortcuts-prog" style="display:none">
   <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
   <kbd>Space</kbd> 재생/정지 &nbsp;
-  <kbd>←→</kbd> 이전/다음 마디 <kbd>↑↓</kbd> 볼륨
+  <kbd>←→</kbd> 이전/다음 마디 <kbd>↑↓</kbd> 볼륨 <kbd>Shift+↑↓</kbd> 곡 변경
 </div>
 
 <script>
@@ -662,7 +662,7 @@
       key: 'C장조',
       chords: ['C', 'Am', 'F', 'G', 'Dm', 'Ab'],
       tuning: 'E Standard',
-      ytUrl: 'https://www.youtube.com/watch?v=u8Y-sZ2WrfA',
+      ytUrl: 'https://www.youtube.com/watch?v=CPf5RTdP0oI',
       sections: [
         { name: 'Intro', bars: [
           { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 }, { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 },
@@ -706,7 +706,7 @@
       key: 'F#단조',
       chords: ['F#m', 'D', 'A', 'E'],
       tuning: 'E Standard',
-      ytUrl: 'https://www.youtube.com/watch?v=y0f-yVr23EM',
+      ytUrl: 'https://www.youtube.com/watch?v=a6dwchTCoAI',
       sections: [
         { name: 'Intro', bars: [
           { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
@@ -1060,6 +1060,16 @@
       if (e.key === ' ') { e.preventDefault(); progToggle(); return; }
       if (e.key === 'ArrowLeft') { e.preventDefault(); progJumpTo(progBarIdx - 1); return; }
       if (e.key === 'ArrowRight') { e.preventDefault(); progJumpTo(progBarIdx + 1); return; }
+      if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        const cur = Number(progSongSelect.value);
+        const next = e.key === 'ArrowUp' ? cur - 1 : cur + 1;
+        if (next >= 0 && next < SONGS.length) {
+          progSongSelect.value = next;
+          progSongSelect.dispatchEvent(new Event('change'));
+        }
+        return;
+      }
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault(); progSetVolume(Number(progVolInput.value) + (e.key === 'ArrowUp' ? 5 : -5)); return;
       }
