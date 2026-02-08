@@ -168,10 +168,14 @@
     border: 2px solid #333;
     border-radius: 8px;
     background: #16213e;
+    color: #ccc;
+    font-family: inherit;
+    font-size: inherit;
     text-align: center;
     transition: all 0.15s;
     cursor: pointer;
   }
+  .prog-bar:focus-visible { outline: 2px solid #e94560; outline-offset: 2px; }
 
   .prog-bar:hover { border-color: #555; }
 
@@ -228,6 +232,19 @@
     background: #000;
   }
   .prog-yt iframe { width: 100%; height: 100%; border: 0; }
+
+  .prog-yt-fallback {
+    width: 100%; height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0.8rem;
+    color: #888; font-size: 0.95rem;
+  }
+  .prog-yt-fallback a {
+    color: #e94560; text-decoration: none; padding: 0.6rem 1.2rem;
+    border: 2px solid #e94560; border-radius: 8px; transition: all 0.15s;
+  }
+  .prog-yt-fallback a:hover, .prog-yt-fallback a:focus-visible {
+    background: #e94560; color: #1a1a2e; outline: none;
+  }
 </style>
 </head>
 <body>
@@ -331,7 +348,7 @@
       <div class="prog-song-meta" id="prog-meta"></div>
     </div>
 
-    <div class="prog-yt" id="prog-yt-wrap">
+    <div class="prog-yt" id="prog-yt-wrap" role="region" aria-label="YouTube 동영상 플레이어">
       <div id="yt-player"></div>
     </div>
 
@@ -688,9 +705,10 @@
       barsWrap.className = 'prog-bars';
 
       sec.bars.forEach(bar => {
-        const el = document.createElement('div');
+        const el = document.createElement('button');
         el.className = 'prog-bar';
-        el.innerHTML = '<span class="chord-name">' + bar.chord + '</span><span class="chord-root">' + bar.root.toFixed(1) + ' Hz</span><span class="bar-num">' + (globalNum + 1) + '</span>';
+        el.setAttribute('aria-label', (globalNum + 1) + '번 마디, ' + bar.chord + ', ' + bar.root.toFixed(1) + ' 헤르츠');
+        el.innerHTML = '<span class="chord-name">' + bar.chord + '</span><span class="chord-root">' + bar.root.toFixed(1) + ' Hz</span><span class="bar-num" aria-hidden="true">' + (globalNum + 1) + '</span>';
         el.addEventListener('click', () => {
           progJumpTo(globalNum);
         });
@@ -899,8 +917,19 @@
   }
 
   function ytLoadVideo(videoId) {
+    // fallback UI 제거 및 플레이어 복원
+    var wrap = document.getElementById('prog-yt-wrap');
+    var fb = wrap.querySelector('.prog-yt-fallback');
+    if (fb) fb.remove();
+    var iframe = wrap.querySelector('iframe');
+    if (iframe) iframe.style.display = '';
+    var playerEl = document.getElementById('yt-player');
+    if (playerEl) playerEl.style.display = '';
+
     if (ytPlayer && ytReady) {
       ytPlayer.cueVideoById(videoId);
+      // iframe title 업데이트
+      if (iframe) iframe.setAttribute('title', progSong.title + ' - ' + progSong.artist + ' YouTube 동영상');
     } else {
       ytPendingVideoId = videoId;
     }
@@ -910,15 +939,34 @@
   ytScript.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(ytScript);
 
+  function showYtFallback(videoId) {
+    var wrap = document.getElementById('prog-yt-wrap');
+    var existing = wrap.querySelector('.prog-yt-fallback');
+    if (existing) existing.remove();
+    var playerEl = document.getElementById('yt-player');
+    if (playerEl) playerEl.style.display = 'none';
+    // iframe이 이미 생성된 경우 숨기기
+    var iframe = wrap.querySelector('iframe');
+    if (iframe) iframe.style.display = 'none';
+    var fb = document.createElement('div');
+    fb.className = 'prog-yt-fallback';
+    fb.innerHTML = '<span>이 동영상은 임베드가 제한되어 있습니다</span>' +
+      '<a href="https://www.youtube.com/watch?v=' + videoId + '" target="_blank" rel="noopener noreferrer">YouTube에서 열기</a>';
+    wrap.appendChild(fb);
+  }
+
   window.onYouTubeIframeAPIReady = function() {
     ytPlayer = new YT.Player('yt-player', {
       height: '100%',
       width: '100%',
       videoId: progSong.ytId || '',
-      playerVars: { rel: 0, modestbranding: 1 },
+      playerVars: { rel: 0, modestbranding: 1, enablejsapi: 1, origin: window.location.origin },
       events: {
         onReady: function() {
           ytReady = true;
+          // iframe에 title 속성 추가 (접근성)
+          var iframe = document.querySelector('#prog-yt-wrap iframe');
+          if (iframe) iframe.setAttribute('title', progSong.title + ' - ' + progSong.artist + ' YouTube 동영상');
           if (ytPendingVideoId) {
             ytPlayer.cueVideoById(ytPendingVideoId);
             ytPendingVideoId = null;
@@ -928,6 +976,10 @@
           if (ev.data === YT.PlayerState.PLAYING) {
             stopAllAppAudio();
           }
+        },
+        onError: function(ev) {
+          // 에러 코드: 2=잘못된 ID, 5=HTML5 오류, 100=삭제됨, 101/150=임베드 제한
+          showYtFallback(progSong.ytId);
         }
       }
     });
