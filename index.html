@@ -215,9 +215,10 @@
     gap: 1.2rem;
   }
 
-  .prog-vol, .prog-chord-ctrl { display: flex; align-items: center; gap: 0.5rem; }
-  .prog-vol label, .prog-chord-ctrl label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
-  .prog-vol span, .prog-chord-ctrl span { font-size: 0.85rem; color: #888; min-width: 2.5rem; }
+  .prog-vol, .prog-chord-ctrl, .prog-melody-ctrl { display: flex; align-items: center; gap: 0.5rem; }
+  .prog-vol label, .prog-chord-ctrl label, .prog-melody-ctrl label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+  .prog-vol span, .prog-chord-ctrl span, .prog-melody-ctrl span { font-size: 0.85rem; color: #888; min-width: 2.5rem; }
+  .prog-melody-ctrl input[type="checkbox"] { accent-color: #e94560; cursor: pointer; }
   .prog-chord-ctrl select { background: #2a2a3e; color: #eee; border: 1px solid #444; border-radius: 4px; padding: 0.15rem 0.3rem; font-size: 0.8rem; }
 
   /* 탭 내 헤딩 */
@@ -376,6 +377,11 @@
         <input id="chord-vol" type="range" min="0" max="100" value="50" aria-label="코드 볼륨" />
         <span id="chord-vol-val">50%</span>
       </div>
+      <div class="prog-melody-ctrl">
+        <label><input type="checkbox" id="melody-toggle" checked /> 멜로디</label>
+        <input id="melody-vol" type="range" min="0" max="100" value="40" aria-label="멜로디 볼륨" />
+        <span id="melody-vol-val">40%</span>
+      </div>
       <div class="setting-group">
         <label for="prog-song">곡 선택</label>
         <select id="prog-song"></select>
@@ -400,7 +406,7 @@
   <kbd>Ctrl+1</kbd> 메트로놈 <kbd>Ctrl+2</kbd> 튜너 <kbd>Ctrl+3</kbd> 코드 진행 &nbsp;|&nbsp;
   <kbd>Space</kbd> 재생/정지 &nbsp;
   <kbd>←→</kbd> 이전/다음 마디 <kbd>↑↓</kbd> 볼륨 <kbd>Shift+↑↓</kbd> 곡 변경 &nbsp;|&nbsp;
-  <kbd>B</kbd> 베이스 온리 <kbd>A</kbd> +아르페지오 <kbd>C</kbd> +코드
+  <kbd>B</kbd> 베이스 온리 <kbd>A</kbd> +아르페지오 <kbd>C</kbd> +코드 <kbd>M</kbd> 멜로디
 </div>
 
 <script>
@@ -641,28 +647,55 @@
       ytUrl: 'https://www.youtube.com/watch?v=KREuRJPoMwA',
       sections: [
         { name: 'Intro', bars: [
-          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+          { chord: 'A', root: 55.00, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'E', root: 41.20, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'D', root: 73.42, melody: [null,null,null,null,null,null,null,null] },
         ]},
         { name: 'Verse 1', bars: [
-          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
-          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','C#4','E4','-','F#4','E4'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','-','-','D4','-','C#4','B3'] },
+          { chord: 'F#m', root: 46.25, melody: ['C#4','-','C#4','A3','C#4','-','D4','E4'] },
+          { chord: 'D', root: 73.42, melody: ['D4','-','-','-',null,null,null,null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','C#4','E4','-','F#4','E4'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','-','-','D4','-','C#4','B3'] },
+          { chord: 'F#m', root: 46.25, melody: ['A3','-','A3','B3','C#4','-','D4','C#4'] },
+          { chord: 'D', root: 73.42, melody: ['D4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Chorus', bars: [
-          { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'E', root: 41.20 },
+          { chord: 'D', root: 73.42, melody: ['F#4','-','F#4','E4','F#4','-','A4','-'] },
+          { chord: 'A', root: 55.00, melody: ['A4','-','-','F#4','E4','-','-','-'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','F#4','E4','D4','-','C#4','-'] },
+          { chord: 'E', root: 41.20, melody: ['B3','-','-','-',null,null,null,null] },
         ]},
         { name: 'Verse 2', bars: [
-          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
-          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','C#4','E4','-','F#4','E4'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','-','-','D4','-','C#4','B3'] },
+          { chord: 'F#m', root: 46.25, melody: ['C#4','-','C#4','A3','C#4','-','D4','E4'] },
+          { chord: 'D', root: 73.42, melody: ['D4','-','-','-',null,null,null,null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','C#4','E4','-','F#4','E4'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','-','-','D4','-','C#4','B3'] },
+          { chord: 'F#m', root: 46.25, melody: ['A3','-','A3','B3','C#4','-','D4','C#4'] },
+          { chord: 'D', root: 73.42, melody: ['D4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Chorus', bars: [
-          { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'E', root: 41.20 },
+          { chord: 'D', root: 73.42, melody: ['F#4','-','F#4','E4','F#4','-','A4','-'] },
+          { chord: 'A', root: 55.00, melody: ['A4','-','-','F#4','E4','-','-','-'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','F#4','E4','D4','-','C#4','-'] },
+          { chord: 'E', root: 41.20, melody: ['B3','-','-','-',null,null,null,null] },
         ]},
         { name: 'Bridge', bars: [
-          { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'A', root: 55.00 },
+          { chord: 'D', root: 73.42, melody: ['D4','-','E4','-','F#4','-','A4','-'] },
+          { chord: 'A', root: 55.00, melody: ['A4','-','-','F#4','E4','-','-','-'] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','-','-','D4','-','C#4','B3'] },
+          { chord: 'A', root: 55.00, melody: ['A3','-','-','-',null,null,null,null] },
         ]},
         { name: 'Outro', bars: [
-          { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 },
-          { chord: 'A', root: 55.00 },
+          { chord: 'A', root: 55.00, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'E', root: 41.20, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'D', root: 73.42, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'A', root: 55.00, melody: [null,null,null,null,null,null,null,null] },
         ]},
       ]
     },
@@ -677,36 +710,84 @@
       ytUrl: 'https://www.youtube.com/watch?v=CPf5RTdP0oI',
       sections: [
         { name: 'Intro', bars: [
-          { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 }, { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 },
-          { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 }, { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 },
+          { chord: 'C', root: 65.41, melody: [null,null,null,null,null,null] },
+          { chord: 'C', root: 65.41, melody: [null,null,null,null,null,null] },
+          { chord: 'F', root: 43.65, melody: [null,null,null,null,null,null] },
+          { chord: 'F', root: 43.65, melody: [null,null,null,null,null,null] },
+          { chord: 'C', root: 65.41, melody: [null,null,null,null,null,null] },
+          { chord: 'C', root: 65.41, melody: [null,null,null,null,null,null] },
+          { chord: 'F', root: 43.65, melody: [null,null,null,null,null,null] },
+          { chord: 'F', root: 43.65, melody: [null,null,null,null,null,null] },
         ]},
         { name: 'Verse 1', bars: [
-          { chord: 'Am', root: 55.00 }, { chord: 'Am', root: 55.00 }, { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 },
-          { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 }, { chord: 'G', root: 49.00 }, { chord: 'G', root: 49.00 },
+          { chord: 'Am', root: 55.00, melody: ['E4','-','E4','E4','D4','C4'] },
+          { chord: 'Am', root: 55.00, melody: ['C4','-','-',null,null,null] },
+          { chord: 'F', root: 43.65, melody: ['C4','-','C4','D4','E4','D4'] },
+          { chord: 'F', root: 43.65, melody: ['C4','-','-',null,null,null] },
+          { chord: 'C', root: 65.41, melody: ['E4','-','E4','E4','G4','E4'] },
+          { chord: 'C', root: 65.41, melody: ['E4','-','-',null,null,null] },
+          { chord: 'G', root: 49.00, melody: ['D4','-','D4','E4','D4','B3'] },
+          { chord: 'G', root: 49.00, melody: ['B3','-','-',null,null,null] },
         ]},
         { name: 'Verse 2', bars: [
-          { chord: 'Am', root: 55.00 }, { chord: 'Am', root: 55.00 }, { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 },
-          { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 }, { chord: 'G', root: 49.00 }, { chord: 'G', root: 49.00 },
+          { chord: 'Am', root: 55.00, melody: ['E4','-','E4','E4','D4','C4'] },
+          { chord: 'Am', root: 55.00, melody: ['C4','-','-',null,null,null] },
+          { chord: 'F', root: 43.65, melody: ['C4','-','C4','D4','E4','D4'] },
+          { chord: 'F', root: 43.65, melody: ['C4','-','-',null,null,null] },
+          { chord: 'C', root: 65.41, melody: ['E4','-','E4','E4','G4','E4'] },
+          { chord: 'C', root: 65.41, melody: ['E4','-','-',null,null,null] },
+          { chord: 'G', root: 49.00, melody: ['D4','-','D4','E4','D4','B3'] },
+          { chord: 'G', root: 49.00, melody: ['B3','-','-',null,null,null] },
         ]},
         { name: 'Chorus', bars: [
-          { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 }, { chord: 'Am', root: 55.00 }, { chord: 'Am', root: 55.00 },
-          { chord: 'Dm', root: 73.42 }, { chord: 'Dm', root: 73.42 }, { chord: 'G', root: 49.00 }, { chord: 'G', root: 49.00 },
+          { chord: 'F', root: 43.65, melody: ['C5','-','C5','A4','G4','-'] },
+          { chord: 'F', root: 43.65, melody: ['A4','-','-',null,null,null] },
+          { chord: 'Am', root: 55.00, melody: ['A4','-','G4','E4','C4','-'] },
+          { chord: 'Am', root: 55.00, melody: ['E4','-','-',null,null,null] },
+          { chord: 'Dm', root: 73.42, melody: ['F4','-','E4','D4','E4','-'] },
+          { chord: 'Dm', root: 73.42, melody: ['D4','-','-',null,null,null] },
+          { chord: 'G', root: 49.00, melody: ['D4','-','E4','F4','G4','-'] },
+          { chord: 'G', root: 49.00, melody: ['G4','-','-',null,null,null] },
         ]},
         { name: 'Verse 3', bars: [
-          { chord: 'Am', root: 55.00 }, { chord: 'Am', root: 55.00 }, { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 },
-          { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 }, { chord: 'G', root: 49.00 }, { chord: 'G', root: 49.00 },
+          { chord: 'Am', root: 55.00, melody: ['E4','-','E4','E4','D4','C4'] },
+          { chord: 'Am', root: 55.00, melody: ['C4','-','-',null,null,null] },
+          { chord: 'F', root: 43.65, melody: ['C4','-','C4','D4','E4','D4'] },
+          { chord: 'F', root: 43.65, melody: ['C4','-','-',null,null,null] },
+          { chord: 'C', root: 65.41, melody: ['E4','-','E4','E4','G4','E4'] },
+          { chord: 'C', root: 65.41, melody: ['E4','-','-',null,null,null] },
+          { chord: 'G', root: 49.00, melody: ['D4','-','D4','E4','D4','B3'] },
+          { chord: 'G', root: 49.00, melody: ['B3','-','-',null,null,null] },
         ]},
         { name: 'Chorus 2', bars: [
-          { chord: 'F', root: 43.65 }, { chord: 'F', root: 43.65 }, { chord: 'Am', root: 55.00 }, { chord: 'Am', root: 55.00 },
-          { chord: 'Dm', root: 73.42 }, { chord: 'Dm', root: 73.42 }, { chord: 'G', root: 49.00 }, { chord: 'G', root: 49.00 },
+          { chord: 'F', root: 43.65, melody: ['C5','-','C5','A4','G4','-'] },
+          { chord: 'F', root: 43.65, melody: ['A4','-','-',null,null,null] },
+          { chord: 'Am', root: 55.00, melody: ['A4','-','G4','E4','C4','-'] },
+          { chord: 'Am', root: 55.00, melody: ['E4','-','-',null,null,null] },
+          { chord: 'Dm', root: 73.42, melody: ['F4','-','E4','D4','E4','-'] },
+          { chord: 'Dm', root: 73.42, melody: ['D4','-','-',null,null,null] },
+          { chord: 'G', root: 49.00, melody: ['D4','-','E4','F4','G4','-'] },
+          { chord: 'G', root: 49.00, melody: ['G4','-','-',null,null,null] },
         ]},
         { name: 'Bridge', bars: [
-          { chord: 'Am', root: 55.00 }, { chord: 'F', root: 43.65 }, { chord: 'C', root: 65.41 }, { chord: 'G', root: 49.00 },
-          { chord: 'Am', root: 55.00 }, { chord: 'F', root: 43.65 }, { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 },
+          { chord: 'Am', root: 55.00, melody: ['A4','-','G4','A4','G4','E4'] },
+          { chord: 'F', root: 43.65, melody: ['F4','-','-','E4','D4','C4'] },
+          { chord: 'C', root: 65.41, melody: ['C4','-','E4','-','G4','-'] },
+          { chord: 'G', root: 49.00, melody: ['G4','-','-',null,null,null] },
+          { chord: 'Am', root: 55.00, melody: ['A4','-','G4','A4','G4','E4'] },
+          { chord: 'F', root: 43.65, melody: ['F4','-','-','E4','D4','C4'] },
+          { chord: 'C', root: 65.41, melody: ['C4','-','E4','-','G4','-'] },
+          { chord: 'C', root: 65.41, melody: ['G4','-','-',null,null,null] },
         ]},
         { name: 'Outro', bars: [
-          { chord: 'Ab', root: 51.91 }, { chord: 'Ab', root: 51.91 }, { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 },
-          { chord: 'Ab', root: 51.91 }, { chord: 'Ab', root: 51.91 }, { chord: 'C', root: 65.41 }, { chord: 'C', root: 65.41 },
+          { chord: 'Ab', root: 51.91, melody: ['C5','-','-','Ab4','G4','-'] },
+          { chord: 'Ab', root: 51.91, melody: ['Ab4','-','-',null,null,null] },
+          { chord: 'C', root: 65.41, melody: ['G4','-','E4','-','C4','-'] },
+          { chord: 'C', root: 65.41, melody: ['C4','-','-',null,null,null] },
+          { chord: 'Ab', root: 51.91, melody: ['C5','-','-','Ab4','G4','-'] },
+          { chord: 'Ab', root: 51.91, melody: ['Ab4','-','-',null,null,null] },
+          { chord: 'C', root: 65.41, melody: ['G4','-','E4','-','C4','-'] },
+          { chord: 'C', root: 65.41, melody: ['C4','-','-',null,null,null] },
         ]},
       ]
     },
@@ -721,33 +802,72 @@
       ytUrl: 'https://www.youtube.com/watch?v=a6dwchTCoAI',
       sections: [
         { name: 'Intro', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'D', root: 73.42, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'A', root: 55.00, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'E', root: 41.20, melody: [null,null,null,null,null,null,null,null] },
         ]},
         { name: 'Verse 1', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: ['F#4','-','F#4','E4','F#4','-','A4','-'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','F#4','-','E4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','F#4','E4','-','C#4','-'] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: ['F#4','-','F#4','E4','F#4','-','A4','-'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','F#4','-','E4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','F#4','E4','-','C#4','-'] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Chorus', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'E', root: 41.20, melody: ['A4','-','-','-',null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','F#4','E4','C#4','-','-',null] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Verse 2', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: ['F#4','-','F#4','E4','F#4','-','A4','-'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','F#4','-','E4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','F#4','E4','-','C#4','-'] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: ['F#4','-','F#4','E4','F#4','-','A4','-'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','F#4','-','E4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','E4','F#4','E4','-','C#4','-'] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Chorus 2', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'E', root: 41.20, melody: ['A4','-','-','-',null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','F#4','E4','C#4','-','-',null] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Bridge', bars: [
-          { chord: 'D', root: 73.42 }, { chord: 'E', root: 41.20 }, { chord: 'F#m', root: 46.25 }, { chord: 'E', root: 41.20 },
+          { chord: 'D', root: 73.42, melody: ['D4','-','E4','-','F#4','-','A4','-'] },
+          { chord: 'E', root: 41.20, melody: ['B4','-','A4','-','G#4','-','-',null] },
+          { chord: 'F#m', root: 46.25, melody: ['F#4','-','-','-','A4','-','-',null] },
+          { chord: 'E', root: 41.20, melody: ['E4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Final Chorus', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'E', root: 41.20, melody: ['A4','-','-','-',null,null,null,null] },
+          { chord: 'F#m', root: 46.25, melody: ['A4','-','A4','B4','C#5','-','-','B4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'A', root: 55.00, melody: ['E4','-','F#4','E4','C#4','-','-',null] },
+          { chord: 'E', root: 41.20, melody: ['C#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Outro', bars: [
-          { chord: 'F#m', root: 46.25 }, { chord: 'D', root: 73.42 }, { chord: 'A', root: 55.00 }, { chord: 'E', root: 41.20 },
+          { chord: 'F#m', root: 46.25, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'D', root: 73.42, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'A', root: 55.00, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'E', root: 41.20, melody: [null,null,null,null,null,null,null,null] },
         ]},
       ]
     },
@@ -762,29 +882,60 @@
       ytUrl: 'https://www.youtube.com/watch?v=TmU-hea9MT0',
       sections: [
         { name: 'Intro', bars: [
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 },
+          { chord: 'Bb', root: 58.27, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'F', root: 43.65, melody: [null,null,null,null,null,null,null,null] },
         ]},
         { name: 'Verse 1', bars: [
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'F', root: 43.65 },
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 },
+          { chord: 'Bb', root: 58.27, melody: ['Bb4','-','Bb4','A4','Bb4','-','C5','Bb4'] },
+          { chord: 'F', root: 43.65, melody: ['A4','-','-','G4','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['G4','-','G4','A4','Bb4','-','A4','G4'] },
+          { chord: 'F', root: 43.65, melody: ['F4','-','-','-',null,null,null,null] },
+          { chord: 'Bb', root: 58.27, melody: ['Bb4','-','Bb4','A4','Bb4','-','C5','Bb4'] },
+          { chord: 'F', root: 43.65, melody: ['A4','-','-','G4','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['G4','-','A4','Bb4','A4','-','G4','-'] },
+          { chord: 'D', root: 73.42, melody: ['F#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Verse 2', bars: [
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'F', root: 43.65 },
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 },
+          { chord: 'Bb', root: 58.27, melody: ['Bb4','-','Bb4','A4','Bb4','-','C5','Bb4'] },
+          { chord: 'F', root: 43.65, melody: ['A4','-','-','G4','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['G4','-','G4','A4','Bb4','-','A4','G4'] },
+          { chord: 'F', root: 43.65, melody: ['F4','-','-','-',null,null,null,null] },
+          { chord: 'Bb', root: 58.27, melody: ['Bb4','-','Bb4','A4','Bb4','-','C5','Bb4'] },
+          { chord: 'F', root: 43.65, melody: ['A4','-','-','G4','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['G4','-','A4','Bb4','A4','-','G4','-'] },
+          { chord: 'D', root: 73.42, melody: ['F#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Chorus', bars: [
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 },
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 },
+          { chord: 'Bb', root: 58.27, melody: ['D5','-','D5','C5','Bb4','-','-','C5'] },
+          { chord: 'F', root: 43.65, melody: ['C5','-','A4','-','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['Bb4','-','Bb4','C5','D5','-','C5','Bb4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','-',null,null,null,null] },
+          { chord: 'Bb', root: 58.27, melody: ['D5','-','D5','C5','Bb4','-','-','C5'] },
+          { chord: 'F', root: 43.65, melody: ['C5','-','A4','-','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['Bb4','-','A4','G4','F4','-','-',null] },
+          { chord: 'D', root: 73.42, melody: ['F#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Bridge', bars: [
-          { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 }, { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 },
+          { chord: 'Gm', root: 49.00, melody: ['G4','-','Bb4','-','D5','-','C5','Bb4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','F#4','A4','-','-',null] },
+          { chord: 'Bb', root: 58.27, melody: ['Bb4','-','C5','-','D5','-','-',null] },
+          { chord: 'F', root: 43.65, melody: ['C5','-','-','-',null,null,null,null] },
         ]},
         { name: 'Final Chorus', bars: [
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 },
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'D', root: 73.42 },
+          { chord: 'Bb', root: 58.27, melody: ['D5','-','D5','C5','Bb4','-','-','C5'] },
+          { chord: 'F', root: 43.65, melody: ['C5','-','A4','-','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['Bb4','-','Bb4','C5','D5','-','C5','Bb4'] },
+          { chord: 'D', root: 73.42, melody: ['A4','-','-','-',null,null,null,null] },
+          { chord: 'Bb', root: 58.27, melody: ['D5','-','D5','C5','Bb4','-','-','C5'] },
+          { chord: 'F', root: 43.65, melody: ['C5','-','A4','-','F4','-','-',null] },
+          { chord: 'Gm', root: 49.00, melody: ['Bb4','-','A4','G4','F4','-','-',null] },
+          { chord: 'D', root: 73.42, melody: ['F#4','-','-','-',null,null,null,null] },
         ]},
         { name: 'Outro', bars: [
-          { chord: 'Bb', root: 58.27 }, { chord: 'F', root: 43.65 }, { chord: 'Gm', root: 49.00 }, { chord: 'Bb', root: 58.27 },
+          { chord: 'Bb', root: 58.27, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'F', root: 43.65, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'Gm', root: 49.00, melody: [null,null,null,null,null,null,null,null] },
+          { chord: 'Bb', root: 58.27, melody: [null,null,null,null,null,null,null,null] },
         ]},
       ]
     }
@@ -963,6 +1114,56 @@
   let chordGainNode = null;
   let chordMode = 'chord'; // 'off' | 'chord' | 'arpeggio'
 
+  // ===== 멜로디 =====
+  let melodyGainNode = null;
+  let melodyEnabled = true;
+
+  function progPlayMelodyNote(time, noteStr, duration) {
+    if (!melodyGainNode || !noteStr || noteStr === '-') return;
+    const freq = noteToFreq(noteStr);
+    if (freq === 0) return;
+
+    const osc = audioCtx.createOscillator();
+    const vibOsc = audioCtx.createOscillator();
+    const vibGain = audioCtx.createGain();
+    const g = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+
+    vibOsc.type = 'sine';
+    vibOsc.frequency.value = 5;
+    vibGain.gain.value = 3;
+    vibOsc.connect(vibGain);
+    vibGain.connect(osc.frequency);
+
+    const sustain = duration * 0.85;
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(0.25, time + 0.015);
+    g.gain.setValueAtTime(0.20, time + 0.06);
+    g.gain.exponentialRampToValueAtTime(0.001, time + sustain);
+
+    osc.connect(g);
+    g.connect(melodyGainNode);
+    osc.start(time);
+    vibOsc.start(time);
+    osc.stop(time + sustain + 0.01);
+    vibOsc.stop(time + sustain + 0.01);
+  }
+
+  // 유틸리티: 노트 이름 → 주파수 (A4=440Hz, 12-TET)
+  const NOTE_NAMES = { C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11 };
+
+  function noteToFreq(note) {
+    if (!note) return 0;
+    const match = note.match(/^([A-G][#b]?)(\d)$/);
+    if (!match) return 0;
+    const semitone = NOTE_NAMES[match[1]];
+    const octave = parseInt(match[2]);
+    const midi = (octave + 1) * 12 + semitone;
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  }
+
   // 유틸리티
   function parseChordIntervals(chordSymbol) {
     const sym = chordSymbol.split('/')[0];
@@ -1066,6 +1267,23 @@
         progPlayArpNote(progNextTime, bar.root, bar.chord, progBeat);
       }
 
+      // 멜로디: 8분음표 해상도 (박당 2개 노트)
+      if (melodyEnabled && bar.melody) {
+        const halfBeat = (60.0 / progSong.bpm) / 2;
+        const melIdx = progBeat * 2;
+
+        const note1 = bar.melody[melIdx];
+        const note2 = (melIdx + 1 < bar.melody.length) ? bar.melody[melIdx + 1] : null;
+
+        if (note1 && note1 !== '-') {
+          const dur1 = (note2 === '-') ? halfBeat * 2 * 0.9 : halfBeat * 0.9;
+          progPlayMelodyNote(progNextTime, note1, dur1);
+        }
+        if (note2 && note2 !== '-') {
+          progPlayMelodyNote(progNextTime + halfBeat, note2, halfBeat * 0.9);
+        }
+      }
+
       const bi = progBeat;
       const barI = progBarIdx;
       const delay = Math.max(0, (progNextTime - audioCtx.currentTime) * 1000);
@@ -1096,6 +1314,11 @@
     chordGainNode.gain.value = chordVolEl ? Number(chordVolEl.value) / 100 : 0.5;
     chordGainNode.connect(audioCtx.destination);
 
+    melodyGainNode = audioCtx.createGain();
+    const melVolEl = document.getElementById('melody-vol');
+    melodyGainNode.gain.value = melVolEl ? Number(melVolEl.value) / 100 : 0.4;
+    melodyGainNode.connect(audioCtx.destination);
+
     progPlaying = true;
     progBeat = -1;
     progNextTime = audioCtx.currentTime;
@@ -1110,6 +1333,7 @@
     clearTimeout(progTimerID); progTimerID = null;
     if (progGainNode) { progGainNode.disconnect(); progGainNode = null; }
     if (chordGainNode) { chordGainNode.disconnect(); chordGainNode = null; }
+    if (melodyGainNode) { melodyGainNode.disconnect(); melodyGainNode = null; }
     progClearBeatDots();
     progPlayBtn.dataset.playing = 'false';
     progPlayBtn.setAttribute('aria-label', '재생');
@@ -1163,6 +1387,21 @@
     const labels = { off: '베이스 온리', chord: '베이스+코드', arpeggio: '베이스+아르페지오' };
     announce(labels[chordMode]);
   }
+
+  const melToggle = document.getElementById('melody-toggle');
+  const melVolInput = document.getElementById('melody-vol');
+  const melVolVal = document.getElementById('melody-vol-val');
+
+  melToggle.addEventListener('change', () => {
+    melodyEnabled = melToggle.checked;
+    announce(melodyEnabled ? '멜로디 켜짐' : '멜로디 꺼짐');
+  });
+
+  melVolInput.addEventListener('input', () => {
+    const v = Number(melVolInput.value);
+    melVolVal.textContent = v + '%';
+    if (melodyGainNode && audioCtx) melodyGainNode.gain.setValueAtTime(v / 100, audioCtx.currentTime);
+  });
 
   function stopAllAppAudio() {
     if (metroPlaying) metroStop();
@@ -1237,6 +1476,7 @@
       if (e.key === 'b' || e.key === 'B') { e.preventDefault(); progSetChordMode('off'); return; }
       if (e.key === 'a' || e.key === 'A') { e.preventDefault(); progSetChordMode('arpeggio'); return; }
       if (e.key === 'c' || e.key === 'C') { e.preventDefault(); progSetChordMode('chord'); return; }
+      if (e.key === 'm' || e.key === 'M') { e.preventDefault(); melToggle.checked = !melToggle.checked; melodyEnabled = melToggle.checked; announce(melodyEnabled ? '멜로디 켜짐' : '멜로디 꺼짐'); return; }
     }
   });
 
