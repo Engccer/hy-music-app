@@ -373,6 +373,7 @@
           <option value="off">끄기</option>
           <option value="chord" selected>코드</option>
           <option value="arpeggio">아르페지오</option>
+          <option value="bassline">베이스 라인</option>
         </select>
         <input id="chord-vol" type="range" min="0" max="100" value="50" aria-label="코드 볼륨" />
         <span id="chord-vol-val">50%</span>
@@ -938,6 +939,146 @@
           { chord: 'Bb', root: 58.27, melody: [null,null,null,null,null,null,null,null] },
         ]},
       ]
+    },
+    {
+      title: '돌아와',
+      artist: '번아웃밴드',
+      bpm: 118,
+      timeSig: 4,
+      key: 'G장조',
+      chords: ['C', 'D', 'Em', 'G'],
+      tuning: 'E Standard',
+      ytUrl: 'https://www.youtube.com/watch?v=zEXOno0PYug',
+      sections: [
+        { name: 'Intro', bars: [
+          // Intro: 루트 홀노트 → 8분 루트로 서서히 진입
+          { chord: 'C', root: 65.41, bassline: ['C2','-','-','-','-','-','-','-'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','-','-','-','-','-','-','-'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','-','-','-','-','-','-','-'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','-','-','-','-','-','-','-'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','-','C2','-','C2','-','C2','-'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','-','D2','-','D2','-','D2','-'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','-','E1','-','E1','-','E1','-'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','-','G1','-','G1','-','A1','B1'] },
+        ]},
+        { name: 'Verse 1', bars: [
+          // Verse: 코드톤 아르페지오 (루트-3rd-5th-3rd)
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','G1','B1','G1','E1','G1','B1','G1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','B1','D2','B1','G1','B1','D2','B1'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','G1','B1','G1','E1','G1','B1','G1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','B1','D2','B1','G1','B1','D2','B1'] },
+          // Pre-Chorus 포함 (마지막 4마디)
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','E1','E1','E1','E1','E1','E1','E1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G1','A1','A1','B1','C2','D2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','E1','E1','E1','E1','E1','E1','E1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G1','A1','A1','B1','C2','D2'] },
+        ]},
+        { name: 'Chorus', bars: [
+          // Chorus: 루트+옥타브 파워 피킹
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+        ]},
+        { name: 'Verse 2', bars: [
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','G1','B1','G1','E1','G1','B1','G1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','B1','D2','B1','G1','B1','D2','B1'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','G1','B1','G1','E1','G1','B1','G1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','B1','D2','B1','G1','B1','D2','B1'] },
+          // Pre-Chorus
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','E1','E1','E1','E1','E1','E1','E1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G1','A1','A1','B1','C2','D2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','E1','E1','E1','E1','E1','E1','E1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G1','A1','A1','B1','C2','D2'] },
+        ]},
+        { name: 'Chorus 2', bars: [
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','C3','C2','C2','C3','C2','C3'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','D3','D2','D2','D3','D2','D3'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','E3','E2','E2','E3','E2','E3'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','G2','G1','G1','G2','G1','G2'] },
+        ]},
+        { name: 'Bridge', bars: [
+          // Bridge: 루트+5th 싱코페이션 그루브
+          { chord: 'C', root: 65.41, bassline: ['C2','-','G2','-','C3','-','G2','-'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','-','A2','-','D3','-','A2','-'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','-','B2','-','E3','-','B2','-'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','-','D2','-','G2','-','D2','-'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','C2','G2','C2','C3','G2','C2','G2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','D2','A2','D2','D3','A2','D2','A2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','E2','B2','E2','E3','B2','E2','B2'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','G1','D2','G1','G2','D2','G1','D2'] },
+        ]},
+        { name: 'Final Chorus', bars: [
+          // Final Chorus: 루트+5th+옥타브 슬랩 스타일
+          { chord: 'C', root: 65.41, bassline: ['C2','G2','C3','G2','C2','G2','C3','G2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','A2','D3','A2','D2','A2','D3','A2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','B2','E3','B2','E2','B2','E3','B2'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','D2','G2','D2','G1','D2','G2','D2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','G2','C3','G2','C2','G2','C3','G2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','A2','D3','A2','D2','A2','D3','A2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','B2','E3','B2','E2','B2','E3','B2'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','D2','G2','D2','G1','D2','G2','D2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','G2','C3','G2','C2','G2','C3','G2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','A2','D3','A2','D2','A2','D3','A2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','B2','E3','B2','E2','B2','E3','B2'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','D2','G2','D2','G1','D2','G2','D2'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','G2','C3','G2','C2','G2','C3','G2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','A2','D3','A2','D2','A2','D3','A2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E2','B2','E3','B2','E2','B2','E3','B2'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','D2','G2','D2','G1','D2','G2','D2'] },
+        ]},
+        { name: 'Outro', bars: [
+          // Outro: 아르페지오로 마무리
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','E2','G2','E2'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','F#2','D2','F#2','A2','F#2'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','G1','B1','G1','E1','G1','B1','G1'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','B1','D2','B1','G1','B1','D2','B1'] },
+          { chord: 'C', root: 65.41, bassline: ['C2','E2','G2','E2','C2','-','-','-'] },
+          { chord: 'D', root: 73.42, bassline: ['D2','F#2','A2','-','-','-','-','-'] },
+          { chord: 'Em', root: 41.20, bassline: ['E1','G1','B1','-','-','-','-','-'] },
+          { chord: 'G', root: 49.00, bassline: ['G1','-','-','-','-','-','-','-'] },
+        ]},
+      ]
     }
   ];
 
@@ -1110,9 +1251,32 @@
     });
   }
 
+  // ===== 베이스 라인 =====
+  function progPlayBasslineNote(time, noteStr, duration) {
+    if (!progGainNode || !noteStr || noteStr === '-') return;
+    const freq = noteToFreq(noteStr);
+    if (freq === 0) return;
+    const harmonics = [
+      { m: 1, g: 0.40 }, { m: 2, g: 0.25 }, { m: 3, g: 0.12 },
+      { m: 4, g: 0.06 }, { m: 5, g: 0.03 },
+    ];
+    const sustain = duration * 0.85;
+    harmonics.forEach(h => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq * h.m;
+      g.gain.setValueAtTime(h.g, time);
+      g.gain.setValueAtTime(h.g * 0.8, time + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, time + sustain);
+      osc.connect(g); g.connect(progGainNode);
+      osc.start(time); osc.stop(time + sustain + 0.01);
+    });
+  }
+
   // ===== 코드 보이싱 =====
   let chordGainNode = null;
-  let chordMode = 'chord'; // 'off' | 'chord' | 'arpeggio'
+  let chordMode = 'chord'; // 'off' | 'chord' | 'arpeggio' | 'bassline'
 
   // ===== 멜로디 =====
   let melodyGainNode = null;
@@ -1256,15 +1420,33 @@
 
       progPlayClick(progNextTime, isAccent);
 
-      // 마디 첫 박에서 베이스 음 재생
-      if (progBeat === 0) {
-        progPlayBass(progNextTime, bar.root);
-        if (chordMode === 'chord') {
-          progPlayChord(progNextTime, bar.root, bar.chord);
+      // 베이스 라인 모드: bassline 데이터가 있으면 8분음표로 재생, 없으면 루트 폴백
+      if (chordMode === 'bassline' && bar.bassline) {
+        const halfBeat = (60.0 / progSong.bpm) / 2;
+        const blIdx = progBeat * 2;
+        const note1 = bar.bassline[blIdx];
+        const note2 = (blIdx + 1 < bar.bassline.length) ? bar.bassline[blIdx + 1] : null;
+        if (note1 && note1 !== '-') {
+          const dur1 = (note2 === '-') ? halfBeat * 2 : halfBeat;
+          progPlayBasslineNote(progNextTime, note1, dur1);
         }
-      }
-      if (chordMode === 'arpeggio') {
-        progPlayArpNote(progNextTime, bar.root, bar.chord, progBeat);
+        if (note2 && note2 !== '-') {
+          progPlayBasslineNote(progNextTime + halfBeat, note2, halfBeat);
+        }
+      } else if (chordMode === 'bassline') {
+        // bassline 데이터 없으면 루트 홀노트 폴백
+        if (progBeat === 0) progPlayBass(progNextTime, bar.root);
+      } else {
+        // 기존 모드: 마디 첫 박에서 베이스 음 재생
+        if (progBeat === 0) {
+          progPlayBass(progNextTime, bar.root);
+          if (chordMode === 'chord') {
+            progPlayChord(progNextTime, bar.root, bar.chord);
+          }
+        }
+        if (chordMode === 'arpeggio') {
+          progPlayArpNote(progNextTime, bar.root, bar.chord, progBeat);
+        }
       }
 
       // 멜로디: 8분음표 해상도 (박당 2개 노트)
@@ -1371,7 +1553,7 @@
 
   chordModeSelect.addEventListener('change', () => {
     chordMode = chordModeSelect.value;
-    const labels = { off: '베이스 온리', chord: '베이스+코드', arpeggio: '베이스+아르페지오' };
+    const labels = { off: '베이스 온리', chord: '베이스+코드', arpeggio: '베이스+아르페지오', bassline: '베이스 라인' };
     announce(labels[chordMode]);
   });
 
@@ -1384,7 +1566,7 @@
   function progSetChordMode(mode) {
     chordMode = mode;
     chordModeSelect.value = mode;
-    const labels = { off: '베이스 온리', chord: '베이스+코드', arpeggio: '베이스+아르페지오' };
+    const labels = { off: '베이스 온리', chord: '베이스+코드', arpeggio: '베이스+아르페지오', bassline: '베이스 라인' };
     announce(labels[chordMode]);
   }
 
@@ -1476,6 +1658,7 @@
       if (e.key === 'b' || e.key === 'B') { e.preventDefault(); progSetChordMode('off'); return; }
       if (e.key === 'a' || e.key === 'A') { e.preventDefault(); progSetChordMode('arpeggio'); return; }
       if (e.key === 'c' || e.key === 'C') { e.preventDefault(); progSetChordMode('chord'); return; }
+      if (e.key === 'l' || e.key === 'L') { e.preventDefault(); progSetChordMode('bassline'); return; }
       if (e.key === 'm' || e.key === 'M') { e.preventDefault(); melToggle.checked = !melToggle.checked; melodyEnabled = melToggle.checked; announce(melodyEnabled ? '멜로디 켜짐' : '멜로디 꺼짐'); return; }
     }
   });
