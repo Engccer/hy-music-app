@@ -1,0 +1,6 @@
+[     375ms] ReferenceError: Cannot access 'ytPlayer' before initialization
+    at ytLoadVideo (http://localhost:8765/:906:5)
+    at progLoadSong (http://localhost:8765/:720:7)
+    at http://localhost:8765/:882:3
+    at http://localhost:8765/:1000:3
+[     390ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:8765/favicon.ico:0

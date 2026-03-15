@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ElevenLabs": {
+      "command": "C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "args": [
+        "C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\elevenlabs_mcp\\server.py"
+      ],
+      "env": {
+        "ELEVENLABS_API_KEY": "${ELEVENLABS_API_KEY}"
+      }
+    }
+  }
+}

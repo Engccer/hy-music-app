@@ -1,0 +1,72 @@
+# 음악 생성 프롬프트
+
+■ Style of Music
+indie rock, 118 BPM, G major, 4/4 time signature, female vocal, drums, bass guitar, lead guitar, rhythm guitar, keyboard
+
+■ Title
+돌아와
+
+■ Lyrics
+
+[Intro]
+[Soft clean piano followed by powerful drums, guitar and bass
+
+[Verse]
+오지 않는 너를 기다리고 있어
+같은 자리 같은 길목에서
+추억은 매 시간이 지날수록
+왜 더 선명해져만 가는지
+
+[Pre-Chorus]
+그대의 기억에 아직 내가 남아 있다면
+
+[Chorus]
+돌아와 돌아와 돌아와
+돌아와
+돌아와
+돌아와 돌아와 돌아와
+
+[Verse]
+오지 않는 너를 기다리고 있어
+같은 자리 같은 길목에서
+추억은 왜 시간이 지날수록
+왜 더 선명해져만 가는지
+
+[Pre-Chorus]
+그대의 기억에 아직 내가 남아있다면
+
+[Chorus]
+돌아와 돌아와 돌아와 돌아와
+돌아와
+돌아와
+돌아와 돌아와 돌아와 돌아와
+
+[Bridge]
+[Instrumental break - lead guitar solo over C D Em G progression, building intensity with power drums]
+
+[Final Pre-Chorus]
+그대의 기억에 아직 내가 남아있다면
+
+[Final Chorus]
+돌아와 돌아와 돌아와 돌아와
+돌아와
+돌아와
+돌아와 돌아와 돌아와 돌아와
+
+[Outro]
+[Eletric ending with all instruments]
+
+[End]
+
+===== 참고 사항 =====
+
+- 코드 진행: C → D → Em → G (전곡 반복)
+- BPM: 118
+- 키: G장조
+- 악기: 드럼, 베이스, 리드 기타, 리듬 기타, 키보드, 보컬
+- 악기별 연주 특성:
+  키보드: 인트로에서는 섬세한 터치, Chorus와 Bridge에서 오르간 사용
+  베이스: Verse에서는 아르페지오, Chorus에서는 파워 피킹, Final Chorus에서는 슬랩 연주
+  드럼: 분위기에 맞게 폭넓은 다이내믹 연주, Final Chorus에서 터지면서 더블 킥 베이스
+  리드 기타: Verse에서는 오버드라이브, Chorus에서 파워 피킹, Bridge에서 화려한 솔로, final Chorus에서 터지며 장대한 마무리
+- 레퍼런스: Halestorm, Ruby from K-pop Demon Hunters
